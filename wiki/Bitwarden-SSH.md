@@ -31,6 +31,7 @@ The item name can work after `bw sync`, but the item UUID is more reliable:
 # brew install bitwarden-cli
 # sudo pacman -S bitwarden-cli
 
+bw login
 export BW_SESSION="$(bw unlock --raw)"
 bw sync
 bw list items --search chezmoi-ssh-config \
@@ -55,6 +56,7 @@ Verify rendering without applying:
 # brew install bitwarden-cli
 # sudo pacman -S bitwarden-cli
 
+bw login
 export BW_SESSION="$(bw unlock --raw)"
 bw sync
 chezmoi execute-template < private_dot_ssh/config.tmpl

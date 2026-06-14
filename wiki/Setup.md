@@ -44,6 +44,7 @@ ssh.bitwardenItem -> Bitwarden item name or ID for private SSH host blocks
 Then preview and apply:
 
 ```bash
+bw login
 export BW_SESSION="$(bw unlock --raw)"
 bw sync
 
@@ -63,6 +64,10 @@ Because the private SSH template needs `bw` before the first apply, install
 `bitwarden-cli` manually with chezmoi in the prerequisite step. The bootstrap
 script still installs `bw` later if it is missing, but it cannot help before
 the first Bitwarden-backed template render.
+
+On a fresh machine, run `bw login` before `bw unlock`. After login, `bw status`
+should report `locked` or `unlocked`; if it reports `unauthenticated`, login has
+not completed for that local CLI profile.
 
 The script checks for commands before installing packages, so tools already
 installed through another manager are left alone.

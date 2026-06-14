@@ -1,6 +1,6 @@
 # Dotfiles
 
-Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/). Works for macOS and Linux (Arch/CachyOS).
+Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/). Works for macOS (Apple Silicon) and Linux (Arch/CachyOS).
 
 ## Quick start
 
@@ -14,6 +14,7 @@ sudo pacman -S chezmoi bitwarden-cli
 chezmoi init git@github.com:yourname/dotfiles.git
 
 # Required when applying private SSH hosts from Bitwarden.
+bw login
 export BW_SESSION="$(bw unlock --raw)"
 bw sync
 

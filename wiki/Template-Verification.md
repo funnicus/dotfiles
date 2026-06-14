@@ -23,6 +23,7 @@ chezmoi execute-template \
 ## SSH config with Bitwarden
 
 ```bash
+bw login
 export BW_SESSION="$(bw unlock --raw)"
 bw sync
 chezmoi execute-template < private_dot_ssh/config.tmpl
