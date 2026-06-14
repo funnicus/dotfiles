@@ -29,7 +29,7 @@ chezmoi apply
 ## Copy setup to a new machine
 
 ```bash
-chezmoi init git@github.com:yourname/dotfiles.git
+chezmoi init git@github.com:funnicus/dotfiles.git
 ```
 
 Answer the prompts from `.chezmoi.toml.tmpl`:

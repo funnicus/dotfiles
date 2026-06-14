@@ -11,7 +11,7 @@ brew install chezmoi bitwarden-cli
 # Arch/CachyOS
 sudo pacman -S chezmoi bitwarden-cli
 
-chezmoi init git@github.com:yourname/dotfiles.git
+chezmoi init git@github.com:funnicus/dotfiles.git
 
 # Required when applying private SSH hosts from Bitwarden.
 bw login
