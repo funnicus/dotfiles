@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+{{- if eq .chezmoi.os "darwin" }}
+defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string "6E4B62A6-1C73-4F91-8E32-DAC9C3FE3BBE"
+{{- end }}

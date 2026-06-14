@@ -1,16 +1,48 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if ! command -v brew >/dev/null 2>&1 && [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+has_font() {
+    command -v fc-match >/dev/null 2>&1 || return 1
+    fc-match -f "%{family}\n" "$1" | grep -Eiq "$2"
+}
+
 if command -v pacman >/dev/null 2>&1; then
+    command -v git >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm git
     command -v fish >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm fish
     command -v nvim >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm neovim
+    has_font "JetBrainsMono Nerd Font" "JetBrains.*(Nerd|NF)" || sudo pacman -S --needed --noconfirm ttf-jetbrains-mono-nerd
+    command -v tree-sitter >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm tree-sitter-cli
+    command -v cc >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm base-devel
+    command -v wl-copy >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm wl-clipboard
+    command -v xclip >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm xclip
+    command -v rg >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm ripgrep
+    command -v lazygit >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm lazygit
+    command -v gdu >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm gdu
+    command -v btm >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm bottom
+    command -v python >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm python
+    command -v node >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm nodejs
+    command -v npm >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm npm
     command -v zoxide >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm zoxide
     command -v thefuck >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm thefuck
     command -v bw >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm bitwarden-cli
     command -v curl >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm curl
 elif command -v brew >/dev/null 2>&1; then
+    command -v git >/dev/null 2>&1 || brew install git
     command -v fish >/dev/null 2>&1 || brew install fish
     command -v nvim >/dev/null 2>&1 || brew install neovim
+    has_font "JetBrainsMono Nerd Font" "JetBrains.*(Nerd|NF)" || brew install --cask font-jetbrains-mono-nerd-font
+    command -v tree-sitter >/dev/null 2>&1 || brew install tree-sitter
+    xcode-select -p >/dev/null 2>&1 || xcode-select --install
+    command -v rg >/dev/null 2>&1 || brew install ripgrep
+    command -v lazygit >/dev/null 2>&1 || brew install lazygit
+    command -v gdu >/dev/null 2>&1 || brew install gdu
+    command -v btm >/dev/null 2>&1 || brew install bottom
+    command -v python3 >/dev/null 2>&1 || brew install python
+    command -v node >/dev/null 2>&1 || brew install node
     command -v zoxide >/dev/null 2>&1 || brew install zoxide
     command -v thefuck >/dev/null 2>&1 || brew install thefuck
     command -v bw >/dev/null 2>&1 || brew install bitwarden-cli

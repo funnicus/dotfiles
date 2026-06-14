@@ -1,0 +1,12 @@
+{
+  "Profiles": [
+    {
+      "Name": "Chezmoi",
+      "Guid": "6E4B62A6-1C73-4F91-8E32-DAC9C3FE3BBE",
+      "Dynamic Profile Parent Name": "Default",
+      "Normal Font": "JetBrainsMonoNFM-Regular 13",
+      "Non Ascii Font": "JetBrainsMonoNFM-Regular 13",
+      "Use Non-ASCII Font": false
+    }
+  ]
+}
