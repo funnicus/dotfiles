@@ -1,0 +1,7 @@
+[data.git]
+    name = {{ promptString "git.name" .chezmoi.username | quote }}
+    email = {{ promptString "git.email" "" | quote }}
+    signingkey = {{ promptString "git.signingkey" "" | quote }}
+
+[data.ssh]
+    bitwardenItem = {{ promptString "ssh.bitwardenItem" "" | quote }}

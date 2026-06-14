@@ -1,0 +1,9 @@
+Host *
+	AddKeysToAgent yes
+	IdentityFile ~/.ssh/id_ed25519
+
+{{- $ssh := get . "ssh" | default dict }}
+{{- $bitwardenItem := get $ssh "bitwardenItem" | default "" }}
+{{- if $bitwardenItem }}
+{{ output "bw" "get" "notes" $bitwardenItem }}
+{{- end }}
