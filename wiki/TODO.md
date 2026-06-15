@@ -13,3 +13,5 @@
 9. Make sure all the necessary package managers are installed (brew, cargo etc.)
   1. Handle cases where you have multiple package managers installed
 10. Check if repo contains unnecessary things (random python scripts etc)
+11. Add ngrok to install https://ngrok.com/docs/guides/share-localhost/overview
+12. Easily add more secrets at will (without chezmoi init/writing only new values)

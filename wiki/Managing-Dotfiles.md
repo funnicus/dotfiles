@@ -28,6 +28,12 @@ chezmoi diff
 chezmoi apply
 ```
 
+## Edit prompts
+
+```bash
+chezmoi edit-config
+```
+
 ## Preview apply
 
 ```bash

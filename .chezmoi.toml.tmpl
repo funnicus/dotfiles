@@ -1,7 +1,10 @@
 [data.git]
-    name = {{ promptString "git.name" .chezmoi.username | quote }}
-    email = {{ promptString "git.email" "" | quote }}
-    signingkey = {{ promptString "git.signingkey" "" | quote }}
+    name = {{ promptStringOnce . "git.name" "git.name" .chezmoi.username | quote }}
+    email = {{ promptStringOnce . "git.email" "git.email" "" | quote }}
+    signingkey = {{ promptStringOnce . "git.signingkey" "git.signingkey" "" | quote }}
 
 [data.ssh]
-    bitwardenItem = {{ promptString "ssh.bitwardenItem" "" | quote }}
+    bitwardenItem = {{ promptStringOnce . "ssh.bitwardenItem" "ssh.bitwardenItem" "" | quote }}
+
+[data.ngrok]
+    bitwardenItem = {{ promptStringOnce . "ngrok.bitwardenItem" "ngrok.bitwardenItem" "" | quote }}
