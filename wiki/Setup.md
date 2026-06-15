@@ -74,3 +74,6 @@ installed through another manager are left alone.
 
 To force the bootstrap again, run the rendered script manually or clear the
 relevant chezmoi script state.
+
+See [Install Script Testing](Install-Script-Testing.md) for dry-run, Docker, and
+GitHub Actions verification commands.

@@ -7,11 +7,17 @@ end
 if test -x /opt/homebrew/bin/brew
   eval "$(/opt/homebrew/bin/brew shellenv)"
 end
+{{- end }}
+
+fish_add_path "$HOME/.cargo/bin"
+fish_add_path "$HOME/go/bin"
+fish_add_path "$HOME/.local/bin"
 
 if functions -q load_nvm
   load_nvm > /dev/stderr
 end
 
+{{- if eq .chezmoi.os "darwin" }}
 # opencode
 fish_add_path "$HOME/.opencode/bin"
 
@@ -31,6 +37,20 @@ end
 if command -q thefuck
   thefuck --alias | source
 end
+
+if command -q lsd
+  alias ls='lsd'
+{{- if eq .chezmoi.os "linux" }}
+else if command -q ls
+  alias ls='ls --color=auto'
+{{- end }}
+end
+
+{{- if eq .chezmoi.os "linux" }}
+if command -q grep
+  alias grep='grep --color=auto'
+end
+{{- end }}
 
 {{- if eq .chezmoi.os "linux" }}
 if set -q XDG_RUNTIME_DIR
@@ -54,11 +74,6 @@ if not string match -q -- $PNPM_HOME $PATH
   set -gx PATH $PNPM_HOME $PATH
 end
 # pnpm end
-
-{{- if eq .chezmoi.os "darwin" }}
-# uv
-fish_add_path "$HOME/.local/bin"
-{{- end }}
 
 set -gx EDITOR zed
 set -gx VISUAL zed

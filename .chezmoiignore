@@ -2,3 +2,9 @@ TODO.md
 README.md
 .github/
 wiki/
+temp/
+
+{{- if ne .chezmoi.os "darwin" }}
+Library/
+set-iterm2-default-profile.sh
+{{- end }}

@@ -1,6 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+pacman_pkgs=()
+brew_formulae=()
+brew_casks=()
+cargo_checks=()
+cargo_crates=()
+go_checks=()
+go_modules=()
+npm_checks=()
+npm_packages=()
+uv_tools=()
+fish_plugins=()
+
+is_dry_run() {
+    [ "${DRY_RUN:-0}" = "1" ] || [ "${DRY_RUN:-}" = "true" ]
+}
+
+install_casks() {
+    [ "${INSTALL_CASKS:-1}" = "1" ] && [ "${INSTALL_CASKS:-}" != "false" ]
+}
+
+print_cmd() {
+    printf 'DRY_RUN:'
+    printf ' %q' "$@"
+    printf '\n'
+}
+
+print_shell_cmd() {
+    printf 'DRY_RUN: %s\n' "$*"
+}
+
 if ! command -v brew >/dev/null 2>&1 && [ -x /opt/homebrew/bin/brew ]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
@@ -10,49 +40,494 @@ has_font() {
     fc-match -f "%{family}\n" "$1" | grep -Eiq "$2"
 }
 
-if command -v pacman >/dev/null 2>&1; then
-    command -v git >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm git
-    command -v fish >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm fish
-    command -v nvim >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm neovim
-    has_font "JetBrainsMono Nerd Font" "JetBrains.*(Nerd|NF)" || sudo pacman -S --needed --noconfirm ttf-jetbrains-mono-nerd
-    command -v tree-sitter >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm tree-sitter-cli
-    command -v cc >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm base-devel
-    command -v wl-copy >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm wl-clipboard
-    command -v xclip >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm xclip
-    command -v rg >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm ripgrep
-    command -v lazygit >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm lazygit
-    command -v gdu >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm gdu
-    command -v btm >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm bottom
-    command -v python >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm python
-    command -v node >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm nodejs
-    command -v npm >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm npm
-    command -v zoxide >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm zoxide
-    command -v thefuck >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm thefuck
-    command -v bw >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm bitwarden-cli
-    command -v curl >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm curl
-elif command -v brew >/dev/null 2>&1; then
-    command -v git >/dev/null 2>&1 || brew install git
-    command -v fish >/dev/null 2>&1 || brew install fish
-    command -v nvim >/dev/null 2>&1 || brew install neovim
-    has_font "JetBrainsMono Nerd Font" "JetBrains.*(Nerd|NF)" || brew install --cask font-jetbrains-mono-nerd-font
-    command -v tree-sitter >/dev/null 2>&1 || brew install tree-sitter
-    xcode-select -p >/dev/null 2>&1 || xcode-select --install
-    command -v rg >/dev/null 2>&1 || brew install ripgrep
-    command -v lazygit >/dev/null 2>&1 || brew install lazygit
-    command -v gdu >/dev/null 2>&1 || brew install gdu
-    command -v btm >/dev/null 2>&1 || brew install bottom
-    command -v python3 >/dev/null 2>&1 || brew install python
-    command -v node >/dev/null 2>&1 || brew install node
-    command -v zoxide >/dev/null 2>&1 || brew install zoxide
-    command -v thefuck >/dev/null 2>&1 || brew install thefuck
-    command -v bw >/dev/null 2>&1 || brew install bitwarden-cli
-    command -v curl >/dev/null 2>&1 || brew install curl
+queue_pacman() {
+    local pkg="$1"
+    local queued=""
+
+    for queued in "${pacman_pkgs[@]}"; do
+        [ "$queued" = "$pkg" ] && return
+    done
+
+    pacman_pkgs+=("$pkg")
+}
+
+queue_brew_formula() {
+    local pkg="$1"
+    local queued=""
+
+    for queued in "${brew_formulae[@]}"; do
+        [ "$queued" = "$pkg" ] && return
+    done
+
+    brew_formulae+=("$pkg")
+}
+
+queue_brew_cask() {
+    local pkg="$1"
+    local queued=""
+
+    for queued in "${brew_casks[@]}"; do
+        [ "$queued" = "$pkg" ] && return
+    done
+
+    brew_casks+=("$pkg")
+}
+
+queue_cargo_tool() {
+    local check=""
+    local crate=""
+    local queued=""
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --check) check="$2"; shift 2 ;;
+            --crate) crate="$2"; shift 2 ;;
+            *) echo "unknown queue_cargo_tool arg: $1" >&2; exit 1 ;;
+        esac
+    done
+
+    command -v "$check" >/dev/null 2>&1 && return
+
+    for queued in "${cargo_checks[@]}"; do
+        [ "$queued" = "$check" ] && return
+    done
+
+    cargo_checks+=("$check")
+    cargo_crates+=("$crate")
+}
+
+queue_go_tool() {
+    local check=""
+    local module=""
+    local queued=""
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --check) check="$2"; shift 2 ;;
+            --module) module="$2"; shift 2 ;;
+            *) echo "unknown queue_go_tool arg: $1" >&2; exit 1 ;;
+        esac
+    done
+
+    command -v "$check" >/dev/null 2>&1 && return
+
+    for queued in "${go_checks[@]}"; do
+        [ "$queued" = "$check" ] && return
+    done
+
+    go_checks+=("$check")
+    go_modules+=("$module")
+}
+
+queue_npm_tool() {
+    local check=""
+    local package=""
+    local queued=""
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --check) check="$2"; shift 2 ;;
+            --package) package="$2"; shift 2 ;;
+            *) echo "unknown queue_npm_tool arg: $1" >&2; exit 1 ;;
+        esac
+    done
+
+    command -v "$check" >/dev/null 2>&1 && return
+
+    for queued in "${npm_checks[@]}"; do
+        [ "$queued" = "$check" ] && return
+    done
+
+    npm_checks+=("$check")
+    npm_packages+=("$package")
+}
+
+queue_uv_tool() {
+    local tool="$1"
+    local queued=""
+
+    command -v "$tool" >/dev/null 2>&1 && return
+
+    for queued in "${uv_tools[@]}"; do
+        [ "$queued" = "$tool" ] && return
+    done
+
+    uv_tools+=("$tool")
+}
+
+queue_fish_plugin() {
+    local plugin="$1"
+    local queued=""
+
+    for queued in "${fish_plugins[@]}"; do
+        [ "$queued" = "$plugin" ] && return
+    done
+
+    fish_plugins+=("$plugin")
+}
+
+install_queued() {
+    if command -v pacman >/dev/null 2>&1 && ((${#pacman_pkgs[@]})); then
+        if is_dry_run; then
+            print_cmd sudo pacman -S --needed --noconfirm "${pacman_pkgs[@]}"
+        else
+            sudo pacman -S --needed --noconfirm "${pacman_pkgs[@]}"
+        fi
+    fi
+
+    if command -v brew >/dev/null 2>&1 && ((${#brew_formulae[@]})); then
+        if is_dry_run; then
+            print_cmd brew install "${brew_formulae[@]}"
+        else
+            brew install "${brew_formulae[@]}"
+        fi
+    fi
+
+    if command -v brew >/dev/null 2>&1 && install_casks && ((${#brew_casks[@]})); then
+        if is_dry_run; then
+            print_cmd brew install --cask "${brew_casks[@]}"
+        else
+            brew install --cask "${brew_casks[@]}"
+        fi
+    fi
+}
+
+load_cargo_env() {
+    if [ -f "$HOME/.cargo/env" ]; then
+        # shellcheck disable=SC1091
+        . "$HOME/.cargo/env"
+    fi
+}
+
+install_rustup() {
+    command -v cargo >/dev/null 2>&1 && return
+
+    if is_dry_run; then
+        print_shell_cmd "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
+        return
+    fi
+
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    load_cargo_env
+}
+
+install_cargo_tools() {
+    local i=0
+
+    if ((${#cargo_crates[@]} == 0)); then
+        return 0
+    fi
+
+    if ! is_dry_run; then
+        install_rustup
+        load_cargo_env
+    fi
+
+    for i in "${!cargo_crates[@]}"; do
+        if command -v "${cargo_checks[$i]}" >/dev/null 2>&1; then
+            continue
+        fi
+
+        if is_dry_run; then
+            print_cmd cargo install "${cargo_crates[$i]}"
+        else
+            cargo install "${cargo_crates[$i]}"
+        fi
+    done
+
+    return 0
+}
+
+install_go_tools() {
+    local i=0
+
+    if ((${#go_modules[@]} == 0)); then
+        return 0
+    fi
+
+    if ! is_dry_run; then
+        command -v go >/dev/null 2>&1 || return 0
+    fi
+
+    export PATH="$HOME/go/bin:$PATH"
+
+    for i in "${!go_modules[@]}"; do
+        if command -v "${go_checks[$i]}" >/dev/null 2>&1; then
+            continue
+        fi
+
+        if is_dry_run; then
+            print_cmd go install "${go_modules[$i]}"
+        else
+            go install "${go_modules[$i]}"
+        fi
+    done
+
+    return 0
+}
+
+install_uv() {
+    command -v uv >/dev/null 2>&1 && return
+
+    if is_dry_run; then
+        print_shell_cmd "curl -LsSf https://astral.sh/uv/install.sh | sh"
+        return
+    fi
+
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
+}
+
+install_uv_tools() {
+    local tool=""
+
+    if ((${#uv_tools[@]} == 0)); then
+        return 0
+    fi
+
+    install_uv
+    export PATH="$HOME/.local/bin:$PATH"
+
+    for tool in "${uv_tools[@]}"; do
+        if command -v "$tool" >/dev/null 2>&1; then
+            continue
+        fi
+
+        if is_dry_run; then
+            print_cmd uv tool install "$tool"
+        else
+            uv tool install "$tool"
+        fi
+    done
+
+    return 0
+}
+
+install_fish_plugins() {
+    local plugin=""
+
+    if ((${#fish_plugins[@]} == 0)); then
+        return 0
+    fi
+
+    if ! is_dry_run; then
+        command -v fish >/dev/null 2>&1 || return 0
+    fi
+
+    if is_dry_run; then
+        print_cmd fish -c 'functions -q fisher; or begin; curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source; fisher install jorgebucaran/fisher; end'
+    else
+        fish -c 'functions -q fisher; or begin; curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source; fisher install jorgebucaran/fisher; end'
+    fi
+
+    for plugin in "${fish_plugins[@]}"; do
+        if is_dry_run; then
+            print_cmd fish -c "fisher list | string match -q -- '$plugin'; or fisher install '$plugin'"
+        else
+            fish -c "fisher list | string match -q -- '$plugin'; or fisher install '$plugin'"
+        fi
+    done
+
+    return 0
+}
+
+install_default_node() {
+    if ! is_dry_run; then
+        command -v fish >/dev/null 2>&1 || return 0
+    fi
+
+    if is_dry_run; then
+        print_cmd fish -c 'functions -q nvm; and nvm install lts; and set --universal nvm_default_version lts'
+    else
+        fish -c 'functions -q nvm; and nvm install lts; and set --universal nvm_default_version lts'
+    fi
+}
+
+install_npm_tools() {
+    local i=0
+
+    if ((${#npm_packages[@]} == 0)); then
+        return 0
+    fi
+
+    if ! is_dry_run; then
+        command -v fish >/dev/null 2>&1 || return 0
+    fi
+
+    for i in "${!npm_packages[@]}"; do
+        command -v "${npm_checks[$i]}" >/dev/null 2>&1 && continue
+        if is_dry_run; then
+            print_cmd fish -c "functions -q nvm; and nvm use default --silent; and npm install -g '${npm_packages[$i]}'"
+        else
+            fish -c "functions -q nvm; and nvm use default --silent; and npm install -g '${npm_packages[$i]}'"
+        fi
+    done
+
+    return 0
+}
+
+print_manual_reminders() {
+    cat <<'EOF'
+
+Manual setup reminders:
+  - Import GPG keys.
+  - Create SSH keys.
+
+EOF
+}
+
+pkg() {
+    local check=""
+    local pacman_check=""
+    local brew_check=""
+    local pacman=""
+    local brew=""
+    local cask=""
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --check) check="$2"; shift 2 ;;
+            --pacman-check) pacman_check="$2"; shift 2 ;;
+            --brew-check) brew_check="$2"; shift 2 ;;
+            --pacman) pacman="$2"; shift 2 ;;
+            --brew) brew="$2"; shift 2 ;;
+            --cask) cask="$2"; shift 2 ;;
+            *) echo "unknown pkg arg: $1" >&2; exit 1 ;;
+        esac
+    done
+
+    if command -v pacman >/dev/null 2>&1; then
+        command -v "${pacman_check:-$check}" >/dev/null 2>&1 && return
+        if [ -n "$pacman" ]; then
+            queue_pacman "$pacman"
+        fi
+    elif command -v brew >/dev/null 2>&1; then
+        command -v "${brew_check:-$check}" >/dev/null 2>&1 && return
+        if [ -n "$cask" ]; then
+            queue_brew_cask "$cask"
+        elif [ -n "$brew" ]; then
+            queue_brew_formula "$brew"
+        fi
+    fi
+
+    return 0
+}
+
+font_pkg() {
+    local name=""
+    local match=""
+    local pacman=""
+    local cask=""
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --name) name="$2"; shift 2 ;;
+            --match) match="$2"; shift 2 ;;
+            --pacman) pacman="$2"; shift 2 ;;
+            --cask) cask="$2"; shift 2 ;;
+            *) echo "unknown font_pkg arg: $1" >&2; exit 1 ;;
+        esac
+    done
+
+    has_font "$name" "$match" && return
+
+    if command -v pacman >/dev/null 2>&1; then
+        queue_pacman "$pacman"
+    elif command -v brew >/dev/null 2>&1; then
+        queue_brew_cask "$cask"
+    fi
+}
+
+pkg --check git         --pacman git                  --brew git
+pkg --check git-lfs     --pacman git-lfs              --brew git-lfs
+pkg --check fish        --pacman fish                 --brew fish
+pkg --check nvim        --pacman neovim               --brew neovim
+pkg --check tree-sitter --pacman tree-sitter-cli      --brew tree-sitter
+pkg --check cc          --pacman base-devel
+pkg --check wl-copy     --pacman wl-clipboard
+pkg --check xclip       --pacman xclip
+pkg --check docker      --pacman docker               --cask docker-desktop
+pkg --check tailscale   --pacman tailscale            --cask tailscale-app
+pkg --check rg          --pacman ripgrep              --brew ripgrep
+pkg --check fd          --pacman fd                   --brew fd
+pkg --check fzf         --pacman fzf                  --brew fzf
+pkg --check lazygit     --pacman lazygit              --brew lazygit
+pkg --check gdu         --pacman gdu                  --brew gdu
+pkg --check btm         --pacman bottom               --brew bottom
+pkg --check btop        --pacman btop                 --brew btop
+pkg --check python      --pacman python               --brew python --brew-check python3
+pkg --check go          --pacman go                   --brew go
+pkg --check zellij      --pacman zellij               --brew zellij
+pkg --check zoxide      --pacman zoxide               --brew zoxide
+pkg --check lsd         --pacman lsd                  --brew lsd
+pkg --check yazi        --pacman yazi                 --brew yazi
+pkg --check file        --pacman file
+pkg --check ffmpeg      --pacman ffmpeg               --brew ffmpeg
+pkg --check unzip       --pacman unzip                --brew unzip
+pkg --check 7z          --pacman 7zip                 --brew sevenzip --brew-check 7zz
+pkg --check jq          --pacman jq                   --brew jq
+pkg --check pdftotext   --pacman poppler              --brew poppler
+pkg --check resvg       --pacman resvg                --brew resvg
+pkg --check magick      --pacman imagemagick          --brew imagemagick
+pkg --check thefuck     --pacman thefuck              --brew thefuck
+pkg --check fastfetch   --pacman fastfetch            --brew fastfetch
+pkg --check figlet      --pacman figlet               --brew figlet
+pkg --check cowsay      --pacman cowsay               --brew cowsay
+pkg --check fortune     --pacman fortune-mod          --brew fortune
+pkg --check tldr        --pacman tealdeer             --brew tealdeer
+pkg --check topgrade                                  --brew topgrade
+pkg --check lazydocker                                --brew jesseduffield/lazydocker/lazydocker
+pkg --check curl        --pacman curl                 --brew curl
+
+font_pkg \
+    --name "JetBrainsMono Nerd Font" \
+    --match "JetBrains.*(Nerd|NF)" \
+    --pacman ttf-jetbrains-mono-nerd \
+    --cask font-jetbrains-mono-nerd-font
+
+queue_fish_plugin jorgebucaran/nvm.fish
+
+queue_cargo_tool --check topgrade --crate topgrade
+queue_cargo_tool --check tldr --crate tealdeer
+
+queue_go_tool --check lazydocker --module github.com/jesseduffield/lazydocker@latest
+queue_go_tool --check actionlint --module github.com/rhysd/actionlint/cmd/actionlint@latest
+
+queue_npm_tool --check bw --package @bitwarden/cli
+
+queue_uv_tool harlequin
+
+if command -v brew >/dev/null 2>&1; then
+    if is_dry_run; then
+        print_shell_cmd "xcode-select -p >/dev/null 2>&1 || xcode-select --install"
+    else
+        xcode-select -p >/dev/null 2>&1 || xcode-select --install
+    fi
 fi
 
+install_queued
+install_fish_plugins
+install_default_node
+install_npm_tools
+install_rustup
+install_cargo_tools
+install_go_tools
+install_uv_tools
+
 if ! command -v bun >/dev/null 2>&1; then
-    curl -fsSL https://bun.sh/install | bash
+    if is_dry_run; then
+        print_shell_cmd "curl -fsSL https://bun.sh/install | bash"
+    else
+        curl -fsSL https://bun.sh/install | bash
+    fi
 fi
 
 if ! command -v pnpm >/dev/null 2>&1; then
-    curl -fsSL https://get.pnpm.io/install.sh | sh -
+    if is_dry_run; then
+        print_shell_cmd "curl -fsSL https://get.pnpm.io/install.sh | sh -"
+    else
+        curl -fsSL https://get.pnpm.io/install.sh | sh -
+    fi
 fi
+
+print_manual_reminders

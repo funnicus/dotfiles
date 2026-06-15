@@ -1,0 +1,77 @@
+name: Install Script
+
+on:
+  push:
+    paths:
+      - ".github/workflows/install-script.yml"
+      - "run_once_install-packages.sh.tmpl"
+      - "dot_config/fish/config.fish.tmpl"
+  pull_request:
+    paths:
+      - ".github/workflows/install-script.yml"
+      - "run_once_install-packages.sh.tmpl"
+      - "dot_config/fish/config.fish.tmpl"
+  workflow_dispatch:
+
+jobs:
+  arch:
+    name: Arch install
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run installer in Arch container
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/work:ro" \
+            -w /work \
+            archlinux:latest \
+            bash -lc '
+              set -euo pipefail
+
+              pacman -Sy --needed --noconfirm sudo ca-certificates
+              bash -n run_once_install-packages.sh.tmpl
+              bash run_once_install-packages.sh.tmpl
+
+              export PATH="$HOME/.cargo/bin:$HOME/go/bin:$HOME/.local/bin:$HOME/.bun/bin:$HOME/.local/share/pnpm:$PATH"
+
+              for cmd in git git-lfs fish nvim tree-sitter docker tailscale rg fd fzf lazygit gdu btm btop python go zellij zoxide lsd yazi ffmpeg unzip 7z jq actionlint pdftotext resvg magick thefuck fastfetch figlet cowsay fortune tldr topgrade lazydocker harlequin bun pnpm curl; do
+                command -v "$cmd" >/dev/null
+              done
+
+              actionlint
+              fish -c "functions -q nvm"
+              fish -c "nvm use default --silent; and node --version; and npm --version; and bw --version"
+            '
+
+  apple-silicon:
+    name: Apple Silicon install
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    env:
+      INSTALL_CASKS: "0"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run installer on Apple Silicon
+        run: |
+          set -euo pipefail
+
+          bash -n run_once_install-packages.sh.tmpl
+          bash run_once_install-packages.sh.tmpl
+
+          export PATH="$HOME/.cargo/bin:$HOME/go/bin:$HOME/.local/bin:$HOME/.bun/bin:$HOME/Library/pnpm:$PATH"
+
+          for cmd in git git-lfs fish nvim tree-sitter rg fd fzf lazygit gdu btm btop python3 go zellij zoxide lsd yazi ffmpeg unzip 7zz jq actionlint pdftotext resvg magick thefuck fastfetch figlet cowsay fortune tldr topgrade lazydocker harlequin bun pnpm curl; do
+            command -v "$cmd" >/dev/null
+          done
+
+          actionlint
+          fish -c "functions -q nvm"
+          fish -c "nvm use default --silent; and node --version; and npm --version; and bw --version"

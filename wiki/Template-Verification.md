@@ -44,3 +44,6 @@ chezmoi apply --dry-run --verbose
 ```
 
 Dry-run output includes script content, but does not install packages.
+
+For package installer dry runs and full Docker-based install tests, see
+[Install Script Testing](Install-Script-Testing.md).
