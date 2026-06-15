@@ -35,6 +35,9 @@ if ! command -v brew >/dev/null 2>&1 && [ -x /opt/homebrew/bin/brew ]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
+export CARGO_HTTP_TIMEOUT="${CARGO_HTTP_TIMEOUT:-120}"
+export CARGO_NET_RETRY="${CARGO_NET_RETRY:-5}"
+
 has_font() {
     command -v fc-match >/dev/null 2>&1 || return 1
     fc-match -f "%{family}\n" "$1" | grep -Eiq "$2"
@@ -44,7 +47,7 @@ queue_pacman() {
     local pkg="$1"
     local queued=""
 
-    for queued in "${pacman_pkgs[@]}"; do
+    for queued in ${pacman_pkgs[@]+"${pacman_pkgs[@]}"}; do
         [ "$queued" = "$pkg" ] && return
     done
 
@@ -55,7 +58,7 @@ queue_brew_formula() {
     local pkg="$1"
     local queued=""
 
-    for queued in "${brew_formulae[@]}"; do
+    for queued in ${brew_formulae[@]+"${brew_formulae[@]}"}; do
         [ "$queued" = "$pkg" ] && return
     done
 
@@ -66,7 +69,7 @@ queue_brew_cask() {
     local pkg="$1"
     local queued=""
 
-    for queued in "${brew_casks[@]}"; do
+    for queued in ${brew_casks[@]+"${brew_casks[@]}"}; do
         [ "$queued" = "$pkg" ] && return
     done
 
@@ -88,7 +91,7 @@ queue_cargo_tool() {
 
     command -v "$check" >/dev/null 2>&1 && return
 
-    for queued in "${cargo_checks[@]}"; do
+    for queued in ${cargo_checks[@]+"${cargo_checks[@]}"}; do
         [ "$queued" = "$check" ] && return
     done
 
@@ -111,7 +114,7 @@ queue_go_tool() {
 
     command -v "$check" >/dev/null 2>&1 && return
 
-    for queued in "${go_checks[@]}"; do
+    for queued in ${go_checks[@]+"${go_checks[@]}"}; do
         [ "$queued" = "$check" ] && return
     done
 
@@ -134,7 +137,7 @@ queue_npm_tool() {
 
     command -v "$check" >/dev/null 2>&1 && return
 
-    for queued in "${npm_checks[@]}"; do
+    for queued in ${npm_checks[@]+"${npm_checks[@]}"}; do
         [ "$queued" = "$check" ] && return
     done
 
@@ -148,7 +151,7 @@ queue_uv_tool() {
 
     command -v "$tool" >/dev/null 2>&1 && return
 
-    for queued in "${uv_tools[@]}"; do
+    for queued in ${uv_tools[@]+"${uv_tools[@]}"}; do
         [ "$queued" = "$tool" ] && return
     done
 
@@ -159,7 +162,7 @@ queue_fish_plugin() {
     local plugin="$1"
     local queued=""
 
-    for queued in "${fish_plugins[@]}"; do
+    for queued in ${fish_plugins[@]+"${fish_plugins[@]}"}; do
         [ "$queued" = "$plugin" ] && return
     done
 
@@ -442,7 +445,7 @@ pkg --check git         --pacman git                  --brew git
 pkg --check git-lfs     --pacman git-lfs              --brew git-lfs
 pkg --check fish        --pacman fish                 --brew fish
 pkg --check nvim        --pacman neovim               --brew neovim
-pkg --check tree-sitter --pacman tree-sitter-cli      --brew tree-sitter
+pkg --check tree-sitter --pacman tree-sitter-cli      --brew tree-sitter-cli
 pkg --check cc          --pacman base-devel
 pkg --check wl-copy     --pacman wl-clipboard
 pkg --check xclip       --pacman xclip
@@ -452,7 +455,8 @@ pkg --check rg          --pacman ripgrep              --brew ripgrep
 pkg --check fd          --pacman fd                   --brew fd
 pkg --check fzf         --pacman fzf                  --brew fzf
 pkg --check lazygit     --pacman lazygit              --brew lazygit
-pkg --check gdu         --pacman gdu                  --brew gdu
+pkg --check gdu         --pacman gdu
+pkg --check gdu-go                                    --brew gdu
 pkg --check btm         --pacman bottom               --brew bottom
 pkg --check btop        --pacman btop                 --brew btop
 pkg --check python      --pacman python               --brew python --brew-check python3

@@ -21,5 +21,6 @@ export PNPM_HOME="$HOME/Library/pnpm"
 export PNPM_HOME="$HOME/.local/share/pnpm"
 {{- end }}
 path_prepend "$PNPM_HOME"
+path_prepend "$PNPM_HOME/bin"
 
 export PATH

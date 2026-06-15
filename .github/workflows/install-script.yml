@@ -36,10 +36,13 @@ jobs:
               bash -n run_once_install-packages.sh.tmpl
               bash run_once_install-packages.sh.tmpl
 
-              export PATH="$HOME/.cargo/bin:$HOME/go/bin:$HOME/.local/bin:$HOME/.bun/bin:$HOME/.local/share/pnpm:$PATH"
+              export PATH="$HOME/.cargo/bin:$HOME/go/bin:$HOME/.local/bin:$HOME/.bun/bin:$HOME/.local/share/pnpm/bin:$HOME/.local/share/pnpm:$PATH"
 
               for cmd in git git-lfs fish nvim tree-sitter docker tailscale rg fd fzf lazygit gdu btm btop python go zellij zoxide lsd yazi ffmpeg unzip 7z jq actionlint pdftotext resvg magick thefuck fastfetch figlet cowsay fortune tldr topgrade lazydocker harlequin bun pnpm curl; do
-                command -v "$cmd" >/dev/null
+                if ! command -v "$cmd" >/dev/null; then
+                  echo "missing command: $cmd" >&2
+                  exit 1
+                fi
               done
 
               actionlint
@@ -66,10 +69,13 @@ jobs:
           bash -n run_once_install-packages.sh.tmpl
           bash run_once_install-packages.sh.tmpl
 
-          export PATH="$HOME/.cargo/bin:$HOME/go/bin:$HOME/.local/bin:$HOME/.bun/bin:$HOME/Library/pnpm:$PATH"
+          export PATH="$HOME/.cargo/bin:$HOME/go/bin:$HOME/.local/bin:$HOME/.bun/bin:$HOME/Library/pnpm/bin:$HOME/Library/pnpm:$PATH"
 
-          for cmd in git git-lfs fish nvim tree-sitter rg fd fzf lazygit gdu btm btop python3 go zellij zoxide lsd yazi ffmpeg unzip 7zz jq actionlint pdftotext resvg magick thefuck fastfetch figlet cowsay fortune tldr topgrade lazydocker harlequin bun pnpm curl; do
-            command -v "$cmd" >/dev/null
+          for cmd in git git-lfs fish nvim tree-sitter rg fd fzf lazygit gdu-go btm btop python3 go zellij zoxide lsd yazi ffmpeg unzip 7zz jq actionlint pdftotext resvg magick thefuck fastfetch figlet cowsay fortune tldr topgrade lazydocker harlequin bun pnpm curl; do
+            if ! command -v "$cmd" >/dev/null; then
+              echo "missing command: $cmd" >&2
+              exit 1
+            fi
           done
 
           actionlint
