@@ -1,6 +1,15 @@
 1. Obsidian integration
-2. Fish functions
-3. Full system install (all packages I use everywhere, pacman, cargo, brew, etc.)
-4. Astro nvim setup https://docs.astronvim.com/#-installation
-5. Import [[GPG]] keys on new machines.
-6. Create [[SSH]] keys on new machines.
+2. Don't change existing ssh config if not logged to bitwarden
+3. Add fedora support
+4. Add ability to skip package install
+  1. (Default) full install
+  2. Minimal install (only dotfile dependencies)
+  3. No install
+5. Uninstall packages and reset/remove dotfiles?
+6. Automatic periodic checks to pipeline
+7. gdu-go to mac only
+8. Refactor install script (break into different files?)
+  1. Would it be more maintanable just to have a different script file for each os type? 
+9. Make sure all the necessary package managers are installed (brew, cargo etc.)
+  1. Handle cases where you have multiple package managers installed
+10. Check if repo contains unnecessary things (random python scripts etc)
