@@ -1,0 +1,7 @@
+{{- $ngrok := get . "ngrok" | default dict }}
+{{- $bitwardenItem := get $ngrok "bitwardenItem" | default "" }}
+{{- if $bitwardenItem }}
+version: "3"
+agent:
+    authtoken: {{ output "bw" "get" "notes" $bitwardenItem }}
+{{- end }}
