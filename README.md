@@ -24,6 +24,19 @@ chezmoi apply --dry-run --verbose
 chezmoi apply
 ```
 
+## Testing
+
+Prerequisite: [just installed](https://github.com/casey/just).
+
+See [justfile](justfile) for available test commands.
+
+Examples:
+
+```bash
+just test-arch
+just test-arch-ci
+```
+
 ## Wiki
 
 - [Setup](wiki/Setup.md)

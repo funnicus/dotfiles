@@ -1,0 +1,131 @@
+[arch]
+pacman = [
+  "git",
+  "git-lfs",
+  "fish",
+  "neovim",
+  "tree-sitter-cli",
+  "base-devel",
+  "wl-clipboard",
+  "xclip",
+  "docker",
+  "tailscale",
+  "ripgrep",
+  "fd",
+  "fzf",
+  "lazygit",
+  "gdu",
+  "bottom",
+  "btop",
+  "python",
+  "go",
+  "zellij",
+  "zoxide",
+  "lsd",
+  "yazi",
+  "file",
+  "ffmpeg",
+  "unzip",
+  "7zip",
+  "jq",
+  "poppler",
+  "resvg",
+  "imagemagick",
+  "thefuck",
+  "fastfetch",
+  "figlet",
+  "cowsay",
+  "fortune-mod",
+  "tealdeer",
+  "curl",
+  "ttf-jetbrains-mono-nerd",
+  "just",
+]
+aur = []
+
+[macos.brew]
+formula = [
+  "git",
+  "git-lfs",
+  "fish",
+  "neovim",
+  "tree-sitter-cli",
+  "ripgrep",
+  "fd",
+  "fzf",
+  "lazygit",
+  "gdu",
+  "bottom",
+  "btop",
+  "python",
+  "go",
+  "zellij",
+  "zoxide",
+  "lsd",
+  "yazi",
+  "ffmpeg",
+  "unzip",
+  "sevenzip",
+  "jq",
+  "poppler",
+  "resvg",
+  "imagemagick",
+  "thefuck",
+  "fastfetch",
+  "figlet",
+  "cowsay",
+  "fortune",
+  "tealdeer",
+  "topgrade",
+  "jesseduffield/lazydocker/lazydocker",
+  "curl",
+  "just",
+]
+casks = [
+  "docker-desktop",
+  "tailscale-app",
+  "font-jetbrains-mono-nerd-font",
+]
+
+[cargo]
+install_rustup = true
+packages = [
+  { check = "topgrade", package = "topgrade" },
+  { check = "tldr", package = "tealdeer" },
+]
+
+[go]
+packages = [
+  { check = "lazydocker", package = "github.com/jesseduffield/lazydocker@latest" },
+  { check = "actionlint", package = "github.com/rhysd/actionlint/cmd/actionlint@latest" },
+]
+
+[npm]
+packages = [
+  { check = "bw", package = "@bitwarden/cli" },
+]
+
+[uv]
+install_uv = true
+packages = [
+  { check = "harlequin", package = "harlequin" },
+]
+
+[fish]
+plugins = [
+  "jorgebucaran/nvm.fish",
+]
+
+[node]
+install_default_lts = true
+install_bun = true
+install_pnpm = true
+
+[macos]
+install_xcode_command_line_tools = true
+
+[manual]
+reminders = [
+  "Import GPG keys.",
+  "Create SSH keys.",
+]

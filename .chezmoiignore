@@ -3,6 +3,10 @@ README.md
 .github/
 wiki/
 temp/
+installer/
+Dockerfile
+Dockerfile.*
+scripts/
 
 {{- if ne .chezmoi.os "darwin" }}
 Library/

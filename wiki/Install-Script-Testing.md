@@ -89,7 +89,7 @@ INSTALL_CASKS=0 bash run_once_install-packages.sh.tmpl
 `.github/workflows/install-script.yml` runs:
 
 - Arch: full install inside `archlinux:latest`.
-- Apple Silicon: full install on `macos-latest` with `INSTALL_CASKS=0`.
+- Apple Silicon: full install on `macos-15` with `INSTALL_CASKS=0`.
 
 The macOS job intentionally skips casks because hosted CI runners are not a good
 place to install GUI apps or system-extension apps. Local macOS installs still
