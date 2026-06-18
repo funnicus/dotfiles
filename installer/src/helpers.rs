@@ -51,6 +51,8 @@ where
         .map_err(|err| anyhow::anyhow!("Prompt failed: {err}"))
 }
 
+/// Returns `true` if the current process is running in a non-interactive mode.
+/// Checks for `CI` and `DRY_RUN` environment variables, and also if stdin is not a terminal.
 pub fn is_non_interactive() -> bool {
     std::env::var("CI").is_ok()
         || std::env::var("DRY_RUN").is_ok()

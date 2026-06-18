@@ -2,7 +2,6 @@ use clap::{Parser, Subcommand};
 
 #[derive(Subcommand)]
 pub enum DotCommand {
-    Check,
     Install,
     Bootstrap,
 }

@@ -40,6 +40,7 @@ just test-arch-ci
 ## Wiki
 
 - [Setup](wiki/Setup.md)
+- [Installed tools](wiki/Installed-Tools.md)
 - [Bitwarden SSH hosts](wiki/Bitwarden-SSH.md)
 - [Managing dotfiles](wiki/Managing-Dotfiles.md)
 - [Template verification](wiki/Template-Verification.md)

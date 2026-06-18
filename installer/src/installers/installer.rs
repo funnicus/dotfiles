@@ -39,12 +39,6 @@ impl Installer {
         })
     }
 
-    pub fn check(&self) -> anyhow::Result<()> {
-        println!("Checking installed self...");
-
-        Ok(())
-    }
-
     pub fn bootstrap(&mut self) -> anyhow::Result<()> {
         let proceed = confirm_with_spinner(&self.spinner, "Install package managers?", true)?;
 
@@ -147,7 +141,6 @@ impl Installer {
         Ok(())
     }
 
-    // HERE
     fn install_tool_self(&self) -> anyhow::Result<()> {
         let cargo_command = which("cargo")
             .map(|path| path.to_string_lossy().to_string())

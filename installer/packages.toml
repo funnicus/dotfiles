@@ -85,10 +85,10 @@ casks = [
   "docker-desktop",
   "tailscale-app",
   "font-jetbrains-mono-nerd-font",
+  "ngrok",
 ]
 
 [cargo]
-install_rustup = true
 packages = [
   { check = "topgrade", package = "topgrade" },
   { check = "tldr", package = "tealdeer" },

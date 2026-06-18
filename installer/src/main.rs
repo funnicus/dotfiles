@@ -19,7 +19,6 @@ fn main() -> anyhow::Result<()> {
     let mut install = Installer::new()?;
 
     let result = match cli.command {
-        DotCommand::Check => install.check(),
         DotCommand::Install => install.install(),
         DotCommand::Bootstrap => install.bootstrap(),
     };

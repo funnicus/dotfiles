@@ -31,7 +31,6 @@ pub struct ToolPackages {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct CargoPackages {
-    pub install_rustup: bool,
     pub packages: Vec<ToolPackage>,
 }
 
