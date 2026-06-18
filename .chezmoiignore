@@ -7,6 +7,12 @@ installer/
 Dockerfile
 Dockerfile.*
 scripts/
+justfile
+
+{{- if not (env "BW_SESSION") }}
+.ssh/config
+.config/ngrok/ngrok.yml
+{{- end }}
 
 {{- if ne .chezmoi.os "darwin" }}
 Library/

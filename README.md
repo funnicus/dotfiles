@@ -13,8 +13,8 @@ sudo pacman -S chezmoi bitwarden-cli
 
 chezmoi init git@github.com:funnicus/dotfiles.git
 
-# Required when applying private SSH hosts from Bitwarden.
-# Remember to unlock each time your apply your dotfiles.
+# Required when applying private variables from Bitwarden.
+# Remember to unlock each time you want to apply changed private variables.
 bw login
 export BW_SESSION="$(bw unlock --raw)"
 bw sync

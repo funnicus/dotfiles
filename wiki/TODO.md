@@ -14,3 +14,4 @@
 11. Add ngrok to install https://ngrok.com/docs/guides/share-localhost/overview
 12. Easily add more secrets at will (without chezmoi init/writing only new values)
 13. Initial install re-triggers on macOS every apply
+14. Add bin to PATH?
