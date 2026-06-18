@@ -22,13 +22,17 @@ test-arch: build-arch
 test-arch-ci: build-arch-ci
     docker run --rm -v "$PWD:/work:ro" {{image}}
 
-# Run the Rust installer locally in dry-run mode
+# Build the dotsetup binary locally
+build-dotsetup:
+    cd installer && cargo build --release
+
+# Run the Rust installer locally in non-interactive mode
 dry-run:
-    cd installer && DRY_RUN=1 cargo run --release -- install
+    cd installer && cargo build --release && DRY_RUN=1 ./target/release/dotsetup install
 
 # Run the Rust installer locally for real
 install:
-    cd installer && cargo run --release -- install
+    cd installer && cargo build --release && ./target/release/dotsetup install
 
 # Check shell templates for syntax
 check-sh:

@@ -32,8 +32,17 @@ chezmoi execute-template < private_dot_ssh/config.tmpl
 ## Shell syntax
 
 ```bash
-fish -n dot_config/fish/config.fish
 bash -n run_once_install-packages.sh.tmpl
+chezmoi execute-template < dot_config/fish/config.fish.tmpl | fish -n
+chezmoi execute-template < run_once_install-packages.sh.tmpl | bash -n
+```
+
+## Rust installer
+
+```bash
+cd installer
+cargo fmt --check
+cargo check
 ```
 
 ## Full dry run

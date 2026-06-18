@@ -63,7 +63,8 @@ jobs:
         run: |
           set -euo pipefail
           cd installer
-          cargo run --release -- install
+          cargo build --release
+          ./target/release/dotsetup install
 
       - name: Verify installed commands
         run: |

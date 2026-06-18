@@ -1,5 +1,3 @@
-// TODO: binary run on shell script (no cargo prequisite)
-
 use std::process::Command;
 
 use console::style;

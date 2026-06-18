@@ -39,6 +39,7 @@ git.name          -> git config user.name
 git.email         -> git config user.email
 git.signingkey    -> optional git config user.signingkey
 ssh.bitwardenItem -> Bitwarden item name or ID for private SSH host blocks
+ngrok.bitwardenItem -> Bitwarden item name or ID for the ngrok authtoken
 ```
 
 Then preview and apply:
@@ -60,6 +61,23 @@ chezmoi apply
 machine. If the script changes later, chezmoi still will not rerun it
 automatically under the same run-once state.
 
+The script is now a thin wrapper around a committed `dotsetup` installer binary.
+It selects `installer/bin/dotsetup-<os>-<arch>` and executes:
+
+```bash
+dotsetup-<os>-<arch> install
+```
+
+Cargo is not required on a fresh machine just to run the installer. Cargo is
+only needed when rebuilding the committed binaries.
+
+The installer package list lives in `installer/packages.toml`; the Rust code
+handles platform detection and command execution.
+
+On non-CI run-once script runs, the wrapper calls `dotsetup bootstrap` before
+`dotsetup install`. The bootstrap command has its own confirmation prompt. CI
+runs skip bootstrap and go straight to `dotsetup install`.
+
 Because the private SSH template needs `bw` before the first apply, install
 `bitwarden-cli` manually with chezmoi in the prerequisite step. The bootstrap
 script still installs `bw` later if it is missing, but it cannot help before
@@ -71,6 +89,10 @@ not completed for that local CLI profile.
 
 The script checks for commands before installing packages, so tools already
 installed through another manager are left alone.
+
+Supported installer targets are macOS on Apple Silicon and Arch/CachyOS Linux.
+Other Linux distributions are detected separately, but package installation is
+not implemented for them yet.
 
 To force the bootstrap again, run the rendered script manually or clear the
 relevant chezmoi script state.

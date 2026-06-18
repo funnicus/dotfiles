@@ -1,96 +1,146 @@
 # Install Script Testing
 
-## Syntax checks
+The chezmoi run-once script is only a wrapper. It detects the current platform
+and runs a committed binary from `installer/bin/`. The installer logic lives in
+the Rust crate under `installer/`, and package data lives in
+`installer/packages.toml`.
+
+## Local checks
 
 ```bash
 bash -n run_once_install-packages.sh.tmpl
 chezmoi execute-template < run_once_install-packages.sh.tmpl | bash -n
 chezmoi execute-template < dot_config/fish/config.fish.tmpl | fish -n
-actionlint
-git diff --check -- run_once_install-packages.sh.tmpl dot_config/fish/config.fish.tmpl
+cd installer && cargo fmt --check
+cd installer && cargo check
+actionlint .github/workflows/install-script.yml
+git diff --check
 ```
 
-## Dry run
-
-Use `DRY_RUN=1` to print install commands without executing them.
+Or run the grouped checks:
 
 ```bash
-DRY_RUN=1 bash run_once_install-packages.sh.tmpl
+just check
 ```
 
-To test the Arch decision path without installing anything on the host:
+`just check` currently covers shell syntax and `cargo check`. Run
+`cargo fmt --check` and `actionlint` separately when touching Rust formatting or
+workflow YAML.
+
+## Rebuild Binaries
+
+Build the local platform binary:
 
 ```bash
-docker run --rm \
-  -v "$PWD:/work:ro" \
-  -w /work \
-  archlinux:latest \
-  bash -lc 'bash -n run_once_install-packages.sh.tmpl && DRY_RUN=1 bash run_once_install-packages.sh.tmpl'
+cd installer
+cargo build --release
 ```
 
-## Full Arch test
-
-This runs the real installer inside a disposable Arch container.
+Then copy it into `installer/bin/` using the platform name expected by the
+wrapper:
 
 ```bash
-docker run --rm \
-  -v "$PWD:/work:ro" \
-  -w /work \
-  archlinux:latest \
-  bash -lc 'pacman -Sy --needed --noconfirm sudo ca-certificates && bash run_once_install-packages.sh.tmpl'
+# Linux x86_64
+cp installer/target/release/dotsetup installer/bin/dotsetup-linux-x86_64
+
+# macOS Apple Silicon
+cp installer/target/release/dotsetup installer/bin/dotsetup-macos-arm64
 ```
 
-For extra verification, run command checks after the install in the same
-container shell:
+The wrapper currently supports these asset names:
+
+- `dotsetup-linux-x86_64`
+- `dotsetup-linux-arm64`
+- `dotsetup-macos-x86_64`
+- `dotsetup-macos-arm64`
+
+Only commit binaries for platforms that are actually supported and tested.
+
+## Local Installer Runs
+
+Run the committed binary through the rendered chezmoi wrapper:
 
 ```bash
-docker run --rm \
-  -v "$PWD:/work:ro" \
-  -w /work \
-  archlinux:latest \
-  bash -lc '
-    set -euo pipefail
-    pacman -Sy --needed --noconfirm sudo ca-certificates
-    bash run_once_install-packages.sh.tmpl
-    export PATH="$HOME/.cargo/bin:$HOME/go/bin:$HOME/.local/bin:$HOME/.bun/bin:$HOME/.local/share/pnpm:$PATH"
-    for cmd in git fish nvim rg fd fzf lazygit zellij zoxide yazi topgrade lazydocker harlequin bun pnpm; do
-      command -v "$cmd" >/dev/null
-    done
-    fish -c "functions -q nvm"
-    fish -c "nvm use default --silent; and node --version; and npm --version; and bw --version"
-  '
+chezmoi execute-template < run_once_install-packages.sh.tmpl | sh
 ```
 
-## CachyOS
-
-CachyOS uses `pacman`, so the installer takes the same branch as Arch. The
-Arch Docker test is the closest automated proxy for CachyOS package-name
-compatibility. If a CachyOS machine has the normal Arch/CachyOS repositories
-enabled, the package list should work out of the box.
-
-## Full macOS test
-
-On a real macOS machine, run:
+Or run a locally built binary directly:
 
 ```bash
-bash run_once_install-packages.sh.tmpl
+cd installer
+cargo build --release
+./target/release/dotsetup install
 ```
 
-In CI, use `INSTALL_CASKS=0` to skip GUI/system-extension casks such as Docker
-Desktop and Tailscale while still testing Homebrew formulae and language-level
-installers:
+`DRY_RUN=1` does not make the installer print commands only. It makes prompts
+non-interactive, which is useful in CI, but install commands still execute.
+Use it only in disposable environments or with the current command behavior in
+mind:
 
 ```bash
-INSTALL_CASKS=0 bash run_once_install-packages.sh.tmpl
+cd installer
+DRY_RUN=1 ./target/release/dotsetup install
 ```
+
+## Arch and CachyOS
+
+The installer supports Arch and CachyOS through the same pacman/AUR path. It
+detects Arch-like systems from `/etc/os-release`.
+
+Use the Docker targets for disposable Arch verification:
+
+```bash
+just test-arch
+just test-arch-ci
+```
+
+`test-arch` runs the installer interactively in an Arch container.
+`test-arch-ci` sets `CI=1 DRY_RUN=1` so prompts take defaults, but package
+commands still run inside the container.
+
+The Docker images compile and run the Rust installer binary:
+
+```bash
+docker build -f Dockerfile.arch-test-ci -t dotfiles-arch-test-ci .
+docker run --rm -v "$PWD:/work:ro" dotfiles-arch-test-ci
+```
+
+## macOS
+
+The macOS installer supports Apple Silicon only. It rejects Intel macOS.
+
+On a real macOS machine:
+
+```bash
+cd installer
+cargo build --release
+./target/release/dotsetup install
+```
+
+By default, local macOS runs install both Homebrew formulae and casks. In CI,
+skip GUI/system-extension casks such as Docker Desktop and Tailscale:
+
+```bash
+cd installer
+INSTALL_CASKS=0 CI=1 DRY_RUN=1 ./target/release/dotsetup install
+```
+
+Only `INSTALL_CASKS=1`, `INSTALL_CASKS=true`, or `INSTALL_CASKS=yes` enables
+cask installation explicitly. If `INSTALL_CASKS` is unset, casks are installed.
+
+The GitHub Actions macOS job also repairs a stale `xcode-select` developer path
+before compiling the installer. This handles hosted runner images where
+`xcode-select -p` points at a removed Xcode bundle.
 
 ## GitHub Actions
 
 `.github/workflows/install-script.yml` runs:
 
-- Arch: full install inside `archlinux:latest`.
-- Apple Silicon: full install on `macos-15` with `INSTALL_CASKS=0`.
+- Arch: builds `Dockerfile.arch-test-ci` and runs the installer in the
+  container.
+- Apple Silicon: runs on `macos-15`, repairs the Xcode developer path, builds
+  the Rust installer, runs it with `CI=1 DRY_RUN=1 INSTALL_CASKS=0`, then
+  verifies expected commands are available.
 
-The macOS job intentionally skips casks because hosted CI runners are not a good
-place to install GUI apps or system-extension apps. Local macOS installs still
-install casks by default.
+The macOS job intentionally skips casks because hosted CI runners are not a
+good place to install GUI apps or system-extension apps.
