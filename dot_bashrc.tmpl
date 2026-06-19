@@ -4,3 +4,11 @@ if [ -f "$HOME/.profile" ]; then
     # shellcheck disable=SC1090
     . "$HOME/.profile"
 fi
+
+. "$HOME/.atuin/bin/env"
+
+if [ -f ~/.bash-preexec.sh ]; then
+    source ~/.bash-preexec.sh
+fi
+
+eval "$(atuin init bash)"
