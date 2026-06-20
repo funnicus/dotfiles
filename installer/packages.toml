@@ -41,6 +41,15 @@ pacman = [
   "ttf-jetbrains-mono-nerd",
   "just",
   "navi",
+  # Virtualization (QEMU)
+  "qemu-full",
+  "virt-manager",
+  "virt-viewer",
+  "dnsmasq",
+  "vde2",
+  "openbsd-netcat",
+  "libvirt",
+  "edk2-ovmf",
 ]
 aur = []
 
@@ -88,6 +97,7 @@ casks = [
   "tailscale-app",
   "font-jetbrains-mono-nerd-font",
   "ngrok",
+  "utm",
 ]
 
 [cargo]
