@@ -1,0 +1,13 @@
+FROM fedora:latest
+
+RUN dnf install --assumeyes \
+    rust \
+    cargo \
+    chezmoi \
+    && dnf clean all
+
+WORKDIR /work
+
+ENV CARGO_TARGET_DIR=/tmp/cargo-target
+
+CMD ["bash", "-lc", "bash -n run_once_install-packages.sh.tmpl && cd installer && cargo build --release && CI=1 DRY_RUN=1 /tmp/cargo-target/release/dotsetup install"]

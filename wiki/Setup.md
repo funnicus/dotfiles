@@ -90,9 +90,9 @@ not completed for that local CLI profile.
 The script checks for commands before installing packages, so tools already
 installed through another manager are left alone.
 
-Supported installer targets are macOS on Apple Silicon and Arch/CachyOS Linux.
-Other Linux distributions are detected separately, but package installation is
-not implemented for them yet.
+Supported installer targets are macOS on Apple Silicon and Arch/CachyOS/Fedora
+Linux. Other Linux distributions are detected separately, but package
+installation is not implemented for them yet.
 
 To force the bootstrap again, run the rendered script manually or clear the
 relevant chezmoi script state.

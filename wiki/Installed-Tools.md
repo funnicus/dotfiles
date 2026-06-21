@@ -49,6 +49,7 @@ runtimes, diagnostics, and media/document utilities.
   - `just --list`: show recipes.
   - `just check`: local checks.
   - `just test-arch-ci`: run installer test container.
+  - `just test-fedora-ci`: run Fedora installer test container.
 - `actionlint`: validate GitHub Actions workflows.
   - `actionlint .github/workflows/install-script.yml`.
 

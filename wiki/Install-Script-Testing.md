@@ -82,7 +82,7 @@ cd installer
 DRY_RUN=1 ./target/release/dotsetup install
 ```
 
-## Arch and CachyOS
+## Arch, CachyOS, and Fedora
 
 The installer supports Arch and CachyOS through the same pacman/AUR path. It
 detects Arch-like systems from `/etc/os-release`.
@@ -104,6 +104,19 @@ The Docker images compile and run the Rust installer binary:
 docker build -f Dockerfile.arch-test-ci -t dotfiles-arch-test-ci .
 docker run --rm -v "$PWD:/work:ro" dotfiles-arch-test-ci
 ```
+
+The installer supports Fedora through DNF. Use the equivalent Docker targets
+to run the full package installation against the current Fedora base image:
+
+```bash
+just test-fedora
+just test-fedora-ci
+```
+
+`test-fedora` runs interactively. `test-fedora-ci` sets `CI=1 DRY_RUN=1` so
+prompts take defaults, but package commands still run inside the container.
+The container validates Fedora package installation; it does not launch KDE
+Plasma.
 
 ## macOS
 
@@ -137,6 +150,8 @@ before compiling the installer. This handles hosted runner images where
 `.github/workflows/install-script.yml` runs:
 
 - Arch: builds `Dockerfile.arch-test-ci` and runs the installer in the
+  container.
+- Fedora: builds `Dockerfile.fedora-test-ci` and runs the installer in the
   container.
 - Apple Silicon: runs on `macos-15`, repairs the Xcode developer path, builds
   the Rust installer, runs it with `CI=1 DRY_RUN=1 INSTALL_CASKS=0`, then

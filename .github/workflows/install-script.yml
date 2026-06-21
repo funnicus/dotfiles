@@ -7,12 +7,14 @@ on:
       - "run_once_install-packages.sh.tmpl"
       - "dot_config/fish/config.fish.tmpl"
       - "installer/**"
+      - "Dockerfile.fedora-test-ci"
   pull_request:
     paths:
       - ".github/workflows/install-script.yml"
       - "run_once_install-packages.sh.tmpl"
       - "dot_config/fish/config.fish.tmpl"
       - "installer/**"
+      - "Dockerfile.fedora-test-ci"
   workflow_dispatch:
 
 jobs:
@@ -30,6 +32,21 @@ jobs:
 
       - name: Run Arch installer dry-run
         run: docker run --rm -v "$PWD:/work:ro" dotfiles-arch-test-ci
+
+  fedora:
+    name: Fedora install
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build Fedora test image
+        run: docker build -f Dockerfile.fedora-test-ci -t dotfiles-fedora-test-ci .
+
+      - name: Run Fedora installer dry-run
+        run: docker run --rm -v "$PWD:/work:ro" dotfiles-fedora-test-ci
 
   apple-silicon:
     name: Apple Silicon install

@@ -1,6 +1,7 @@
 set shell := ["bash", "-cu"]
 
 image := "dotfiles-arch-test"
+fedora_image := "dotfiles-fedora-test"
 
 # Show available commands
 default:
@@ -21,6 +22,22 @@ test-arch: build-arch
 # Test Arch installer in Docker without interaction
 test-arch-ci: build-arch-ci
     docker run --rm -v "$PWD:/work:ro" {{image}}
+
+# Build the Fedora test Docker image
+build-fedora:
+    docker build -f Dockerfile.fedora-test -t {{fedora_image}} .
+
+# Build the Fedora test ci Docker image
+build-fedora-ci:
+    docker build -f Dockerfile.fedora-test-ci -t {{fedora_image}} .
+
+# Test Fedora installer in Docker
+test-fedora: build-fedora
+    docker run --rm -it -v "$PWD:/work:ro" {{fedora_image}}
+
+# Test Fedora installer in Docker without interaction
+test-fedora-ci: build-fedora-ci
+    docker run --rm -v "$PWD:/work:ro" {{fedora_image}}
 
 # Build the dotsetup binary locally
 build-dotsetup:

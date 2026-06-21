@@ -1,6 +1,6 @@
 # Dotfiles
 
-Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/). Works for macOS (Apple Silicon) and Linux (Arch/CachyOS). Also installs a large set of tools and packages I want in every system.
+Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/). Works for macOS (Apple Silicon) and Linux (Arch/CachyOS/Fedora). Also installs a large set of tools and packages I want in every system.
 
 ## Quick start
 
@@ -35,6 +35,8 @@ Examples:
 ```bash
 just test-arch
 just test-arch-ci
+just test-fedora
+just test-fedora-ci
 ```
 
 ## Wiki
