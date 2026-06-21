@@ -334,7 +334,7 @@ impl Installer {
         for command in commands {
             let mut cmd = Command::new(&command[0]);
             cmd.args(&command[1..]);
-            if !cmd.status()?.success() {
+            if !self.spinner.suspend(|| cmd.status())?.success() {
                 return Err(anyhow::anyhow!("Failed to run command: {:?}", command));
             }
         }

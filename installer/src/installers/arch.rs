@@ -119,7 +119,12 @@ impl ArchInstaller {
 
         let pacman = &self.packages.arch.pacman;
         if !pacman.is_empty() {
-            let mut args = vec!["pacman".into(), "-S".into(), "--needed".into()];
+            let mut args = vec![
+                "sudo".into(),
+                "pacman".into(),
+                "-S".into(),
+                "--needed".into(),
+            ];
 
             if is_non_interactive() {
                 args.push("--noconfirm".into());
