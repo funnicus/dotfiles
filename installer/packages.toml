@@ -41,6 +41,7 @@ pacman = [
   "ttf-jetbrains-mono-nerd",
   "just",
   "navi",
+  "github-cli",
   # Virtualization (QEMU)
   "qemu-full",
   "virt-manager",
@@ -91,6 +92,7 @@ formula = [
   "curl",
   "just",
   "navi",
+  "gh",
 ]
 casks = [
   "docker-desktop",
@@ -98,6 +100,7 @@ casks = [
   "font-jetbrains-mono-nerd-font",
   "ngrok",
   "utm",
+  "iterm2",
 ]
 
 [cargo]
