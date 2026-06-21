@@ -161,11 +161,9 @@ impl Installer {
                 continue;
             }
 
-            if !Command::new(&cargo_command)
-                .args(["install", tool.package.as_str()])
-                .status()?
-                .success()
-            {
+            let mut command = Command::new(&cargo_command);
+            command.args(["install", tool.package.as_str()]);
+            if !self.command_succeeded(&mut command)? {
                 return Err(anyhow::anyhow!(
                     "Failed to install Cargo package {}",
                     tool.package
@@ -178,11 +176,9 @@ impl Installer {
                 continue;
             }
 
-            if !Command::new("go")
-                .args(["install", tool.package.as_str()])
-                .status()?
-                .success()
-            {
+            let mut command = Command::new("go");
+            command.args(["install", tool.package.as_str()]);
+            if !self.command_succeeded(&mut command)? {
                 return Err(anyhow::anyhow!(
                     "Failed to install Go package {}",
                     tool.package
@@ -199,11 +195,9 @@ impl Installer {
                 "functions -q nvm; and nvm use default --silent; and npm install -g '{}'",
                 tool.package
             );
-            if !Command::new("fish")
-                .args(["-c", command.as_str()])
-                .status()?
-                .success()
-            {
+            let mut npm_command = Command::new("fish");
+            npm_command.args(["-c", command.as_str()]);
+            if !self.command_succeeded(&mut npm_command)? {
                 return Err(anyhow::anyhow!(
                     "Failed to install npm package {}",
                     tool.package
@@ -211,14 +205,12 @@ impl Installer {
             }
         }
 
-        if self.packages.uv.install_uv
-            && which("uv").is_err()
-            && !Command::new("sh")
-                .args(["-c", "curl -LsSf https://astral.sh/uv/install.sh | sh"])
-                .status()?
-                .success()
-        {
-            return Err(anyhow::anyhow!("Failed to install uv"));
+        if self.packages.uv.install_uv && which("uv").is_err() {
+            let mut command = Command::new("sh");
+            command.args(["-c", "curl -LsSf https://astral.sh/uv/install.sh | sh"]);
+            if !self.command_succeeded(&mut command)? {
+                return Err(anyhow::anyhow!("Failed to install uv"));
+            }
         }
 
         let uv_command = which("uv")
@@ -230,11 +222,9 @@ impl Installer {
                 continue;
             }
 
-            if !Command::new(&uv_command)
-                .args(["tool", "install", tool.package.as_str()])
-                .status()?
-                .success()
-            {
+            let mut command = Command::new(&uv_command);
+            command.args(["tool", "install", tool.package.as_str()]);
+            if !self.command_succeeded(&mut command)? {
                 return Err(anyhow::anyhow!(
                     "Failed to install uv package {}",
                     tool.package
@@ -251,14 +241,12 @@ impl Installer {
             return Ok(());
         }
 
-        if !Command::new("fish")
-            .args([
-                "-c",
-                "functions -q fisher; or begin; curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source; fisher install jorgebucaran/fisher; end",
-            ])
-            .status()?
-            .success()
-        {
+        let mut command = Command::new("fish");
+        command.args([
+            "-c",
+            "functions -q fisher; or begin; curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source; fisher install jorgebucaran/fisher; end",
+        ]);
+        if !self.command_succeeded(&mut command)? {
             return Err(anyhow::anyhow!("Failed to install Fisher"));
         }
 
@@ -266,11 +254,9 @@ impl Installer {
             let command = format!(
                 "fisher list | string match -q -- '{plugin}'; or fisher install '{plugin}'"
             );
-            if !Command::new("fish")
-                .args(["-c", command.as_str()])
-                .status()?
-                .success()
-            {
+            let mut fish_command = Command::new("fish");
+            fish_command.args(["-c", command.as_str()]);
+            if !self.command_succeeded(&mut fish_command)? {
                 return Err(anyhow::anyhow!("Failed to install Fish plugin {plugin}"));
             }
         }
@@ -279,36 +265,31 @@ impl Installer {
     }
 
     fn install_node_tools(&self) -> anyhow::Result<()> {
-        if self.packages.node.install_default_lts
-            && !Command::new("fish")
-                .args([
-                    "-c",
-                    "functions -q nvm; and nvm install lts; and set --universal nvm_default_version lts",
-                ])
-                .status()?
-                .success()
-        {
-            return Err(anyhow::anyhow!("Failed to install default Node.js LTS"));
+        if self.packages.node.install_default_lts {
+            let mut command = Command::new("fish");
+            command.args([
+                "-c",
+                "functions -q nvm; and nvm install lts; and set --universal nvm_default_version lts",
+            ]);
+            if !self.command_succeeded(&mut command)? {
+                return Err(anyhow::anyhow!("Failed to install default Node.js LTS"));
+            }
         }
 
-        if self.packages.node.install_bun
-            && which("bun").is_err()
-            && !Command::new("sh")
-                .args(["-c", "curl -fsSL https://bun.sh/install | bash"])
-                .status()?
-                .success()
-        {
-            return Err(anyhow::anyhow!("Failed to install Bun"));
+        if self.packages.node.install_bun && which("bun").is_err() {
+            let mut command = Command::new("sh");
+            command.args(["-c", "curl -fsSL https://bun.sh/install | bash"]);
+            if !self.command_succeeded(&mut command)? {
+                return Err(anyhow::anyhow!("Failed to install Bun"));
+            }
         }
 
-        if self.packages.node.install_pnpm
-            && which("pnpm").is_err()
-            && !Command::new("sh")
-                .args(["-c", "curl -fsSL https://get.pnpm.io/install.sh | sh -"])
-                .status()?
-                .success()
-        {
-            return Err(anyhow::anyhow!("Failed to install pnpm"));
+        if self.packages.node.install_pnpm && which("pnpm").is_err() {
+            let mut command = Command::new("sh");
+            command.args(["-c", "curl -fsSL https://get.pnpm.io/install.sh | sh -"]);
+            if !self.command_succeeded(&mut command)? {
+                return Err(anyhow::anyhow!("Failed to install pnpm"));
+            }
         }
 
         Ok(())
@@ -334,11 +315,15 @@ impl Installer {
         for command in commands {
             let mut cmd = Command::new(&command[0]);
             cmd.args(&command[1..]);
-            if !self.spinner.suspend(|| cmd.status())?.success() {
+            if !self.command_succeeded(&mut cmd)? {
                 return Err(anyhow::anyhow!("Failed to run command: {:?}", command));
             }
         }
 
         Ok(())
+    }
+
+    fn command_succeeded(&self, command: &mut Command) -> anyhow::Result<bool> {
+        Ok(self.spinner.suspend(|| command.status())?.success())
     }
 }
