@@ -4,12 +4,22 @@ on:
   push:
     paths:
       - ".github/workflows/install-script.yml"
+      - "Dockerfile.arch-bootstrap-test"
+      - "Dockerfile.arch-bootstrap-test-ci"
+      - "Dockerfile.arch-test"
+      - "Dockerfile.arch-test-ci"
+      - "justfile"
       - "run_once_install-packages.sh.tmpl"
       - "dot_config/fish/config.fish.tmpl"
       - "installer/**"
   pull_request:
     paths:
       - ".github/workflows/install-script.yml"
+      - "Dockerfile.arch-bootstrap-test"
+      - "Dockerfile.arch-bootstrap-test-ci"
+      - "Dockerfile.arch-test"
+      - "Dockerfile.arch-test-ci"
+      - "justfile"
       - "run_once_install-packages.sh.tmpl"
       - "dot_config/fish/config.fish.tmpl"
       - "installer/**"
@@ -19,11 +29,17 @@ jobs:
   arch:
     name: Arch install
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Build Arch bootstrap test image
+        run: docker build -f Dockerfile.arch-bootstrap-test-ci -t dotfiles-arch-bootstrap-test-ci .
+
+      - name: Run Arch bootstrap integration
+        run: docker run --rm -v "$PWD:/work:ro" dotfiles-arch-bootstrap-test-ci
 
       - name: Build Arch test image
         run: docker build -f Dockerfile.arch-test-ci -t dotfiles-arch-test-ci .

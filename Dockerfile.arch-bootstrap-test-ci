@@ -1,0 +1,33 @@
+FROM archlinux:latest AS builder
+
+RUN pacman -Sy --noconfirm \
+    base-devel \
+    rust \
+    && pacman -Scc --noconfirm
+
+WORKDIR /src/installer
+
+COPY installer/Cargo.toml installer/Cargo.lock ./
+COPY installer/src ./src
+COPY installer/packages.toml ./packages.toml
+
+RUN cargo build --release
+
+FROM archlinux:latest
+
+RUN pacman -Sy --noconfirm \
+    ca-certificates \
+    curl \
+    sudo \
+    && pacman -Scc --noconfirm \
+    && useradd -m -G wheel dotsetup \
+    && printf '%%wheel ALL=(ALL:ALL) NOPASSWD: ALL\n' > /etc/sudoers.d/wheel \
+    && chmod 0440 /etc/sudoers.d/wheel
+
+COPY --from=builder /src/installer/target/release/dotsetup /usr/local/bin/dotsetup
+
+USER dotsetup
+ENV HOME=/home/dotsetup
+WORKDIR /work
+
+CMD ["bash", "-lc", "! command -v cargo && ! command -v rustc && ! command -v rustup && bash -n run_once_install-packages.sh.tmpl && cd installer && CI=1 DRY_RUN=1 dotsetup bootstrap && (command -v yay || command -v paru) && test -x /home/linuxbrew/.linuxbrew/bin/brew && test -x \"$HOME/.cargo/bin/rustup\""]

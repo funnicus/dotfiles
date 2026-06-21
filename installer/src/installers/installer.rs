@@ -5,7 +5,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use which::which;
 
 use crate::{
-    helpers::confirm_with_spinner,
+    helpers::{confirm_with_spinner, is_non_interactive},
     installers::{arch::ArchInstaller, mac::AppleSiliconInstaller},
     packages::Packages,
     platform::{self, LinuxDistro, Platform},
@@ -90,10 +90,15 @@ impl Installer {
         self.spinner.set_message("Installing homebrew...");
 
         if which("brew").is_err() {
-            let status = Command::new("/bin/bash")
+            let mut command = Command::new("/bin/bash");
+            command
                 .arg("-c")
-                .arg(r#"curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | /bin/bash"#)
-                .status()?;
+                .arg(r#"curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | /bin/bash"#);
+            if is_non_interactive() {
+                command.env("NONINTERACTIVE", "1");
+            }
+
+            let status = self.spinner.suspend(|| command.status())?;
 
             if !status.success() {
                 return Err(anyhow::anyhow!("Homebrew install failed"));
@@ -103,10 +108,15 @@ impl Installer {
         self.spinner.set_message("Installing rust...");
 
         if which("rustup").is_err() {
-            let status = Command::new("sh")
-                .arg("-c")
-                .arg(r#"curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"#)
-                .status()?;
+            let rustup_install = if is_non_interactive() {
+                r#"curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"#
+            } else {
+                r#"curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"#
+            };
+
+            let status = self
+                .spinner
+                .suspend(|| Command::new("sh").arg("-c").arg(rustup_install).status())?;
 
             if !status.success() {
                 return Err(anyhow::anyhow!("Rust install failed"));

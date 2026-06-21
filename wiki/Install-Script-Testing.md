@@ -92,17 +92,27 @@ Use the Docker targets for disposable Arch verification:
 ```bash
 just test-arch
 just test-arch-ci
+just test-arch-bootstrap
+just test-arch-bootstrap-ci
 ```
 
 `test-arch` runs the installer interactively in an Arch container.
 `test-arch-ci` sets `CI=1 DRY_RUN=1` so prompts take defaults, but package
 commands still run inside the container.
+`test-arch-bootstrap` and `test-arch-bootstrap-ci` run `dotsetup bootstrap`.
+They build the `dotsetup` binary in a builder stage, copy it into a clean Arch
+runtime image, assert that `cargo`, `rustc`, and `rustup` are not installed
+there, run as a non-root user with passwordless `sudo`, execute the real
+bootstrap package-manager installs, and verify an AUR helper, Linuxbrew, and
+rustup are installed.
 
 The Docker images compile and run the Rust installer binary:
 
 ```bash
 docker build -f Dockerfile.arch-test-ci -t dotfiles-arch-test-ci .
 docker run --rm -v "$PWD:/work:ro" dotfiles-arch-test-ci
+docker build -f Dockerfile.arch-bootstrap-test-ci -t dotfiles-arch-bootstrap-test-ci .
+docker run --rm -v "$PWD:/work:ro" dotfiles-arch-bootstrap-test-ci
 ```
 
 ## macOS

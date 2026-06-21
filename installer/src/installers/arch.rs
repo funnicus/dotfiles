@@ -70,9 +70,12 @@ impl ArchInstaller {
                 AurHelper::None => return Ok(()),
             };
 
-            let status = Command::new("sudo")
-                .args(["pacman", "-S", "--needed", "base-devel", "git"])
-                .status()?;
+            let mut pacman_args = vec!["pacman", "-S", "--needed", "base-devel", "git"];
+            if is_non_interactive() {
+                pacman_args.push("--noconfirm");
+            }
+
+            let status = spinner.suspend(|| Command::new("sudo").args(pacman_args).status())?;
 
             if !status.success() {
                 anyhow::bail!("Failed to install AUR build dependencies");
@@ -82,16 +85,24 @@ impl ArchInstaller {
                 std::fs::remove_dir_all(dir)?;
             }
 
-            let status = Command::new("git").args(["clone", repo, dir]).status()?;
+            let status =
+                spinner.suspend(|| Command::new("git").args(["clone", repo, dir]).status())?;
 
             if !status.success() {
                 anyhow::bail!("Failed to clone AUR helper repository");
             }
 
-            let status = Command::new("makepkg")
-                .args(["-si"])
-                .current_dir(dir)
-                .status()?;
+            let mut makepkg_args = vec!["-si"];
+            if is_non_interactive() {
+                makepkg_args.push("--noconfirm");
+            }
+
+            let status = spinner.suspend(|| {
+                Command::new("makepkg")
+                    .args(makepkg_args)
+                    .current_dir(dir)
+                    .status()
+            })?;
 
             if !status.success() {
                 anyhow::bail!("Failed to build/install AUR helper");
