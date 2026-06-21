@@ -7,7 +7,7 @@ use strum_macros::{Display, EnumIter};
 use which::which;
 
 use crate::{
-    helpers::{is_non_interactive, select_with_spinner},
+    helpers::{is_non_interactive, root_command, select_with_spinner},
     packages::Packages,
     platform,
 };
@@ -70,9 +70,17 @@ impl ArchInstaller {
                 AurHelper::None => return Ok(()),
             };
 
-            let status = Command::new("sudo")
-                .args(["pacman", "-S", "--needed", "base-devel", "git"])
-                .status()?;
+            let command = root_command(
+                "pacman",
+                vec![
+                    "-S".into(),
+                    "--needed".into(),
+                    "base-devel".into(),
+                    "git".into(),
+                ],
+            );
+            let status =
+                spinner.suspend(|| Command::new(&command[0]).args(&command[1..]).status())?;
 
             if !status.success() {
                 anyhow::bail!("Failed to install AUR build dependencies");
@@ -108,14 +116,14 @@ impl ArchInstaller {
 
         let pacman = &self.packages.arch.pacman;
         if !pacman.is_empty() {
-            let mut args = vec!["pacman".into(), "-S".into(), "--needed".into()];
+            let mut args = vec!["-S".into(), "--needed".into()];
 
             if is_non_interactive() {
                 args.push("--noconfirm".into());
             }
 
             args.append(&mut pacman.clone());
-            self.commands.push(args);
+            self.commands.push(root_command("pacman", args));
         } else {
             println!("{}", style("No Pacman packages to install").bold().yellow());
         }

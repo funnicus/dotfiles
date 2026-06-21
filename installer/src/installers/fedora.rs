@@ -1,6 +1,10 @@
 use console::style;
 
-use crate::{helpers::is_non_interactive, packages::Packages, platform};
+use crate::{
+    helpers::{is_non_interactive, root_command},
+    packages::Packages,
+    platform,
+};
 
 pub struct FedoraInstaller {
     packages: Packages,
@@ -26,21 +30,25 @@ impl FedoraInstaller {
 
         let copr = &self.packages.fedora.copr;
         if !copr.is_empty() {
-            self.commands.push(vec![
-                "dnf".into(),
-                "install".into(),
-                "--assumeyes".into(),
-                "dnf-plugins-core".into(),
-            ]);
+            self.commands.push(root_command(
+                "dnf",
+                vec![
+                    "install".into(),
+                    "--assumeyes".into(),
+                    "dnf-plugins-core".into(),
+                ],
+            ));
 
             for repository in copr {
-                self.commands.push(vec![
-                    "dnf".into(),
-                    "copr".into(),
-                    "enable".into(),
-                    "--assumeyes".into(),
-                    repository.clone(),
-                ]);
+                self.commands.push(root_command(
+                    "dnf",
+                    vec![
+                        "copr".into(),
+                        "enable".into(),
+                        "--assumeyes".into(),
+                        repository.clone(),
+                    ],
+                ));
             }
         }
 
@@ -50,12 +58,12 @@ impl FedoraInstaller {
             return Ok(());
         }
 
-        let mut args = vec!["dnf".into(), "install".into()];
+        let mut args = vec!["install".into()];
         if is_non_interactive() {
             args.push("--assumeyes".into());
         }
         args.append(&mut dnf.clone());
-        self.commands.push(args);
+        self.commands.push(root_command("dnf", args));
 
         Ok(())
     }

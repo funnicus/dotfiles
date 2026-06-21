@@ -96,10 +96,12 @@ impl Installer {
         self.spinner.set_message("Installing homebrew...");
 
         if which("brew").is_err() {
-            let status = Command::new("/bin/bash")
-                .arg("-c")
-                .arg(r#"curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | /bin/bash"#)
-                .status()?;
+            let status = self.spinner.suspend(|| {
+                Command::new("/bin/bash")
+                    .arg("-c")
+                    .arg(r#"curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | /bin/bash"#)
+                    .status()
+            })?;
 
             if !status.success() {
                 return Err(anyhow::anyhow!("Homebrew install failed"));
@@ -109,10 +111,12 @@ impl Installer {
         self.spinner.set_message("Installing rust...");
 
         if which("rustup").is_err() {
-            let status = Command::new("sh")
-                .arg("-c")
-                .arg(r#"curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"#)
-                .status()?;
+            let status = self.spinner.suspend(|| {
+                Command::new("sh")
+                    .arg("-c")
+                    .arg(r#"curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"#)
+                    .status()
+            })?;
 
             if !status.success() {
                 return Err(anyhow::anyhow!("Rust install failed"));
@@ -331,7 +335,14 @@ impl Installer {
         for command in commands {
             let mut cmd = Command::new(&command[0]);
             cmd.args(&command[1..]);
-            if !cmd.status()?.success() {
+
+            let status = if command[0] == "sudo" {
+                self.spinner.suspend(|| cmd.status())?
+            } else {
+                cmd.status()?
+            };
+
+            if !status.success() {
                 return Err(anyhow::anyhow!("Failed to run command: {:?}", command));
             }
         }
