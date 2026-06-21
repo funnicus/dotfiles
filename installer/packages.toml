@@ -54,6 +54,11 @@ pacman = [
 aur = []
 
 [fedora]
+copr = [
+  "dejan/lazygit",
+  "varlad/zellij",
+  "lihaohong/yazi",
+]
 dnf = [
   "git",
   "git-lfs",
@@ -68,23 +73,18 @@ dnf = [
   "ripgrep",
   "fd-find",
   "fzf",
-  "lazygit",
   "gdu",
-  "bottom",
   "btop",
   "python3",
   "go",
-  "zellij",
   "zoxide",
   "lsd",
-  "yazi",
   "file",
   "ffmpeg-free",
   "unzip",
   "7zip",
   "jq",
   "poppler-utils",
-  "resvg",
   "ImageMagick",
   "thefuck",
   "fastfetch",
@@ -101,7 +101,6 @@ dnf = [
   "virt-manager",
   "virt-viewer",
   "dnsmasq",
-  "vde2",
   "nmap-ncat",
   "libvirt",
   "edk2-ovmf",
@@ -158,6 +157,7 @@ casks = [
 packages = [
   { check = "topgrade", package = "topgrade" },
   { check = "tldr", package = "tealdeer" },
+  { check = "btm", package = "bottom" },
 ]
 
 [go]

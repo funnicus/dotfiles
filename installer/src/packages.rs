@@ -9,6 +9,7 @@ pub struct Arch {
 #[derive(Deserialize, Debug, Clone)]
 pub struct Fedora {
     pub dnf: Vec<String>,
+    pub copr: Vec<String>,
 }
 
 #[derive(Deserialize, Debug, Clone)]

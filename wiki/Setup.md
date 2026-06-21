@@ -74,6 +74,10 @@ only needed when rebuilding the committed binaries.
 The installer package list lives in `installer/packages.toml`; the Rust code
 handles platform detection and command execution.
 
+On Fedora, Lazygit, Zellij, and Yazi are installed from their documented COPR
+repositories. Bottom is installed from crates.io. The remaining Fedora tools
+come from the standard DNF repositories.
+
 On non-CI run-once script runs, the wrapper calls `dotsetup bootstrap` before
 `dotsetup install`. The bootstrap command has its own confirmation prompt. CI
 runs skip bootstrap and go straight to `dotsetup install`.

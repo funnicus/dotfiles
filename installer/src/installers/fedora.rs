@@ -24,6 +24,26 @@ impl FedoraInstaller {
             return Ok(());
         }
 
+        let copr = &self.packages.fedora.copr;
+        if !copr.is_empty() {
+            self.commands.push(vec![
+                "dnf".into(),
+                "install".into(),
+                "--assumeyes".into(),
+                "dnf-plugins-core".into(),
+            ]);
+
+            for repository in copr {
+                self.commands.push(vec![
+                    "dnf".into(),
+                    "copr".into(),
+                    "enable".into(),
+                    "--assumeyes".into(),
+                    repository.clone(),
+                ]);
+            }
+        }
+
         let dnf = &self.packages.fedora.dnf;
         if dnf.is_empty() {
             println!("{}", style("No DNF packages to install").bold().yellow());
