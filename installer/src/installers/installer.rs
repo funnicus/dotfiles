@@ -6,13 +6,14 @@ use which::which;
 
 use crate::{
     helpers::confirm_with_spinner,
-    installers::{arch::ArchInstaller, mac::AppleSiliconInstaller},
+    installers::{arch::ArchInstaller, fedora::FedoraInstaller, mac::AppleSiliconInstaller},
     packages::Packages,
     platform::{self, LinuxDistro, Platform},
 };
 
 pub struct Installer {
     arch: ArchInstaller,
+    fedora: FedoraInstaller,
     silicon: AppleSiliconInstaller,
     pub packages: Packages,
     pub commands: Vec<Vec<String>>,
@@ -28,12 +29,14 @@ impl Installer {
 
         let packages = Packages::load()?;
         let arch_packages = packages.clone();
+        let fedora_packages = packages.clone();
         let silicon_packages = packages.clone();
 
         Ok(Self {
             packages,
             commands: Vec::new(),
             arch: ArchInstaller::new(arch_packages),
+            fedora: FedoraInstaller::new(fedora_packages),
             silicon: AppleSiliconInstaller::new(silicon_packages),
             spinner,
         })
@@ -69,6 +72,9 @@ impl Installer {
             }
             Platform::Linux(LinuxDistro::Arch | LinuxDistro::CachyOS) => {
                 self.arch.install()?;
+            }
+            Platform::Linux(LinuxDistro::Fedora) => {
+                self.fedora.install()?;
             }
             other => anyhow::bail!("Unsupported OS: {other:?}"),
         }
@@ -318,6 +324,7 @@ impl Installer {
 
     fn run_commands(&mut self) -> anyhow::Result<()> {
         let mut commands = self.arch.get_commands().to_vec();
+        commands.extend(self.fedora.get_commands().to_vec());
         commands.extend(self.silicon.get_commands().to_vec());
         commands.extend(self.commands.clone());
 

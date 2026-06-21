@@ -7,6 +7,11 @@ pub struct Arch {
 }
 
 #[derive(Deserialize, Debug, Clone)]
+pub struct Fedora {
+    pub dnf: Vec<String>,
+}
+
+#[derive(Deserialize, Debug, Clone)]
 pub struct Brew {
     pub formula: Vec<String>,
     pub casks: Vec<String>,
@@ -60,6 +65,7 @@ pub struct Manual {
 #[derive(Deserialize, Debug, Clone)]
 pub struct Packages {
     pub arch: Arch,
+    pub fedora: Fedora,
     pub macos: MacOS,
     pub cargo: CargoPackages,
     pub go: ToolPackages,
