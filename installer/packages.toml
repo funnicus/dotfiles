@@ -93,6 +93,7 @@ formula = [
   "just",
   "navi",
   "gh",
+  "pinentry-mac",
 ]
 casks = [
   "docker-desktop",
