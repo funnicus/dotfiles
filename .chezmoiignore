@@ -18,3 +18,7 @@ justfile
 Library/
 set-iterm2-default-profile.sh
 {{- end }}
+
+{{- if eq .chezmoi.os "darwin" }}
+.config/hypr
+{{- end }}
