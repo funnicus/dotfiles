@@ -108,6 +108,7 @@ casks = [
 packages = [
   { check = "topgrade", package = "topgrade" },
   { check = "tldr", package = "tealdeer" },
+  { check = "cargo install-update", package = "cargo-update" },
 ]
 
 [go]
