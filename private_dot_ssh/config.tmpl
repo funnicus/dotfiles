@@ -8,5 +8,5 @@ Host *
 {{- $ssh := get . "ssh" | default dict }}
 {{- $bitwardenItem := get $ssh "bitwardenItem" | default "" }}
 {{- if $bitwardenItem }}
-{{ output "bw" "get" "notes" $bitwardenItem }}
+{{ output "bw" "get" "notes" $bitwardenItem "--nointeraction" }}
 {{- end }}

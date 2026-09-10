@@ -47,6 +47,15 @@ cargo check
 
 ## Full dry run
 
+Without `BW_SESSION`, chezmoi skips the SSH config and both ngrok config
+locations, leaving existing files untouched. Unlock Bitwarden and export
+`BW_SESSION` to include them in the diff. Secret lookups use `--nointeraction`
+so an invalid session fails without trying to prompt from a template (which
+can cause Bitwarden's `ERR_USE_AFTER_CLOSE: readline was closed` error).
+
+Run the isolated Bitwarden template regression checks with `just test-templates`.
+These use a fake `bw` command and do not access your vault.
+
 ```bash
 chezmoi diff
 chezmoi apply --dry-run --verbose
