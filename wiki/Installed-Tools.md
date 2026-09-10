@@ -9,6 +9,8 @@ runtimes, diagnostics, and media/document utilities.
 - `fish`: default interactive shell.
   - `functions`: list loaded functions.
   - `funced name`: edit a fish function.
+- `atuin`: shell history search, installed on Arch/CachyOS and macOS.
+  - Initialized by the fish config in interactive sessions.
 - `zellij`: terminal workspace/session manager.
   - `zellij`: start a session.
   - `zellij list-sessions`: show sessions.
@@ -18,7 +20,6 @@ runtimes, diagnostics, and media/document utilities.
   - `z foo`: jump to a frequently used path matching `foo`.
   - `zi`: interactive jump.
 - `fzf`: fuzzy finder used directly and by other tools.
-  - `Ctrl-r`: fuzzy shell history search.
   - `find . -type f | fzf`: pick a file.
 - `lsd`: nicer `ls`.
   - `ls -la`: detailed listing.
@@ -38,6 +39,8 @@ runtimes, diagnostics, and media/document utilities.
   - `nvim .`: open a project.
   - `:Lazy`: plugin UI.
   - `:Mason`: language/tool installer UI.
+- `zed`: graphical editor, installed on Arch/CachyOS and macOS.
+  - The fish config sets `EDITOR` and `VISUAL` to `zed`.
 - `ripgrep` (`rg`): fast text search.
   - `rg "text"`: search recursively.
   - `rg -n "text" path`: include line numbers.
@@ -48,6 +51,7 @@ runtimes, diagnostics, and media/document utilities.
 - `just`: command runner for this repo.
   - `just --list`: show recipes.
   - `just check`: local checks.
+  - `just test-templates`: isolated Bitwarden template checks without vault access.
   - `just test-arch-ci`: run installer test container.
 - `actionlint`: validate GitHub Actions workflows.
   - `actionlint .github/workflows/install-script.yml`.
@@ -125,7 +129,13 @@ runtimes, diagnostics, and media/document utilities.
 
 ## Platform Notes
 
+- Both platforms install Atuin and Zed through their native package lists:
+  pacman packages on Arch/CachyOS; an Atuin formula and Zed cask on macOS.
 - Arch/CachyOS also installs `base-devel`, `wl-clipboard`, `xclip`, Linux
   Docker/Tailscale packages, and the JetBrains Mono Nerd Font package.
 - macOS installs Homebrew formulae plus optional casks: Docker Desktop,
-  Tailscale, and JetBrains Mono Nerd Font. Casks are skipped in CI.
+  Tailscale, JetBrains Mono Nerd Font, ngrok, UTM, iTerm2, Zed, and Raycast.
+  Raycast is included only on macOS. Set `INSTALL_CASKS=0` to skip casks, as
+  the macOS CI job does; they are enabled by default.
+- The macOS `Chezmoi` iTerm2 profile uses fish as a login shell, JetBrains Mono
+  Nerd Font, and Nord dark colors matching the Alacritty config.

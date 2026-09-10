@@ -54,6 +54,41 @@ chezmoi apply --dry-run --verbose
 chezmoi apply
 ```
 
+Without `BW_SESSION`, `chezmoi diff` and `chezmoi apply` skip `.ssh/config`,
+`.config/ngrok/ngrok.yml`, and `Library/Application Support/ngrok/ngrok.yml`.
+Existing files stay untouched. An invalid session produces a non-interactive
+Bitwarden error; unlock again and export the new session before retrying.
+
+## Update an existing machine
+
+Package additions in `installer/packages.toml` do not automatically rerun the
+run-once installer. From the configured fish shell, run:
+
+```fish
+dotsetup install
+```
+
+This installs packages from the current list, including Atuin and Zed on both
+supported platforms and Raycast on macOS. Package-list changes do not require
+rebuilding the committed installer binary.
+
+Run `chezmoi diff` and `chezmoi apply` to update the managed config files.
+
+## iTerm2 on macOS
+
+The managed dynamic profile is named `Chezmoi` and lives at
+`~/Library/Application Support/iTerm2/DynamicProfiles/chezmoi.json`.
+Its source is the corresponding `.json.tmpl` file in this repository.
+
+It launches `/opt/homebrew/bin/fish --login` on Apple Silicon, uses JetBrains
+Mono Nerd Font at size 13, and applies Nord dark colors matching Alacritty.
+The profile keeps the dark palette in both light and dark macOS appearances.
+The template also renders `/usr/local/bin/fish --login` on Intel Macs, although
+the package installer supports only Apple Silicon macOS.
+
+The run-once iTerm2 script selects this profile as the default. After applying
+profile updates, open a new session with the `Chezmoi` profile to use them.
+
 ## Bootstrap script
 
 `run_once_install-packages.sh.tmpl` is a chezmoi script. Chezmoi runs
