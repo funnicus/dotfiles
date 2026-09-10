@@ -24,18 +24,32 @@ chezmoi apply --dry-run --verbose
 chezmoi apply
 ```
 
+Without `BW_SESSION`, chezmoi skips the private SSH and ngrok configs and leaves
+existing copies untouched. An invalid session fails without prompting; unlock
+Bitwarden again to include secrets in the diff or apply.
+
+The installer includes Atuin and Zed on both supported platforms, plus Raycast
+on macOS. The macOS `Chezmoi` iTerm2 profile launches fish with a Nord dark palette.
+See [Setup](wiki/Setup.md) for updating an existing machine.
+
 ## Testing
 
-Prerequisite: [just installed](https://github.com/casey/just).
+Install [just](https://github.com/casey/just). Local checks also need Rust/Cargo;
+template tests need Python 3 and chezmoi. Arch container tests need Docker running.
 
 See [justfile](justfile) for available test commands.
 
 Examples:
 
 ```bash
-just test-arch
+just check
+just test-templates
 just test-arch-ci
+just test-arch-bootstrap-ci
 ```
+
+See [Install Script Testing](wiki/Install-Script-Testing.md) for test scope and
+Apple Silicon Docker limitations.
 
 ## Wiki
 
