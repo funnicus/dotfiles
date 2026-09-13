@@ -31,6 +31,10 @@ fish_add_path "$HOME/aistor-binaries"
 {{- end }}
 
 if command -q zoxide
+  # Older zoxide reads cd.fish from disk; newer Fish embeds it in the binary.
+  if not test -f "$__fish_data_dir/functions/cd.fish"; and not functions -q __zoxide_cd_internal
+    functions --copy cd __zoxide_cd_internal
+  end
   zoxide init fish | source
 end
 # overwrite greeting
