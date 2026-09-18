@@ -131,6 +131,7 @@ packages = [
 install_uv = true
 packages = [
   { check = "harlequin", package = "harlequin" },
+  { check = "mlx-lm", package = "mlx-lm" },
 ]
 
 [fish]

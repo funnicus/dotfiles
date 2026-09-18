@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.mlx.qwen30b</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>{{ .chezmoi.homeDir }}/.local/bin/mlx_lm.server</string>
+        <string>--model</string>
+        <string>mlx-community/Qwen3-Coder-30B-A3B-Instruct-8bit</string>
+        <string>--host</string>
+        <string>127.0.0.1</string>
+        <string>--port</string>
+        <string>8080</string>
+        <string>--max-tokens</string>
+        <string>32768</string>
+    </array>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/mlx-qwen30b.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/tmp/mlx-qwen30b-error.log</string>
+</dict>
+</plist>

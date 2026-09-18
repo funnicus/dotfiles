@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.mlx.coder-next</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>{{ .chezmoi.homeDir }}/.local/bin/mlx_lm.server</string>
+        <string>--model</string>
+        <string>mlx-community/Qwen3-Coder-Next-4bit</string>
+        <string>--host</string>
+        <string>127.0.0.1</string>
+        <string>--port</string>
+        <string>8080</string>
+        <string>--prefill-step-size</string>
+        <string>512</string>
+        <string>--max-tokens</string>
+        <string>32768</string>
+    </array>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/mlx-coder-next.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/tmp/mlx-coder-next-error.log</string>
+</dict>
+</plist>
