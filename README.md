@@ -58,3 +58,4 @@ Apple Silicon Docker limitations.
 - [Bitwarden SSH hosts](wiki/Bitwarden-SSH.md)
 - [Managing dotfiles](wiki/Managing-Dotfiles.md)
 - [Template verification](wiki/Template-Verification.md)
+- [Local AI](wiki/Local-AI.md)
