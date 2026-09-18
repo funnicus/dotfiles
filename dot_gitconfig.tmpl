@@ -3,8 +3,8 @@
     useConfigOnly = true
     name = {{ .git.name }}
 		email = {{ .git.email }}
-		{{- if .git.signingkey }}
-		signingKey = {{ .git.signingkey }}
+		{{- if .git.signingKey }}
+		signingKey = {{ .git.signingKey }}
 		{{- end }}
 
 [init]
@@ -89,5 +89,5 @@
     line-numbers = true
 {{ end }}
 
-[includeIf "gitdir:~/Code/work/n"]
+[includeIf "gitdir:~/Code/work/n/**"]
     path = ~/.config/git/n.inc

@@ -6,7 +6,7 @@ Render with explicit test data:
 
 ```bash
 chezmoi execute-template \
-  --override-data '{"git":{"name":"Alice Example","email":"alice@example.com","signingkey":""}}' \
+  --override-data '{"git":{"name":"Alice Example","email":"alice@example.com","signingKey":""}}' \
   --file dot_gitconfig.tmpl
 ```
 
