@@ -1,21 +1,93 @@
 [user]
-	name = {{ .git.name }}
-	email = {{ .git.email }}
-	{{- if .git.signingkey }}
-	signingkey = {{ .git.signingkey }}
-	{{- end }}
+    # Never let Git invent an identity.
+    useConfigOnly = true
+    name = {{ .git.name }}
+		email = {{ .git.email }}
+		{{- if .git.signingkey }}
+		signingKey = {{ .git.signingkey }}
+		{{- end }}
+
+[init]
+    defaultBranch = main
+
+[core]
+    editor = nvim
+
+[commit]
+    verbose = true
+
+[fetch]
+    prune = true
+
+[gpg]
+    format = ssh
+
+[commit]
+	gpgsign = true
+
+[submodule]
+	recurse = true
+
+[push]
+    default = simple
+    autoSetupRemote = true
+
+[pull]
+    rebase = true
+
+[rebase]
+    autoStash = true
+
+[rerere]
+    enabled = true
+    autoupdate = true
+
+[merge]
+    conflictStyle = zdiff3
+    ff = only
+
+[diff]
+    algorithm = histogram
+
+[branch]
+    sort = -committerdate
+
+[tag]
+    sort = version:refname
+
+[column]
+    ui = auto
+
+[color]
+    ui = auto
+
+[alias]
+    st = status --short --branch
+    sw = switch
+    co = checkout
+    br = branch
+    ci = commit
+    unstage = restore --staged
+    last = log -1 --stat
+    lg = log --graph --decorate --pretty=format:'%C(auto)%h%d %s %C(black)%C(bold)%cr %C(blue)<%an>%C(reset)' --all
+
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[commit]
-	gpgsign = {{ .git.signingkey | ne "" }}
-[merge]
-	ff = only
-[push]
-	autoSetupRemote = true
-[pull]
-	rebase = true
-[submodule]
-	recurse = true
+
+{{ if lookPath "delta" }}
+[core]
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    line-numbers = true
+{{ end }}
+
+[includeIf "gitdir:~/Code/work/n"]
+    path = ~/.config/git/n.inc
