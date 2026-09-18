@@ -46,7 +46,7 @@ Use the printed UUID as `ssh.bitwardenItem` if name lookup is unreliable.
 Bitwarden item notes:
 
 ```gotemplate
-{{ output "bw" "get" "notes" $bitwardenItem }}
+{{ output "bw" "get" "notes" $bitwardenItem "--nointeraction" }}
 ```
 
 Verify rendering without applying:

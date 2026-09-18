@@ -3,5 +3,5 @@
 {{- if $bitwardenItem }}
 version: "3"
 agent:
-    authtoken: {{ output "bw" "get" "notes" $bitwardenItem }}
+    authtoken: {{ output "bw" "get" "notes" $bitwardenItem "--nointeraction" }}
 {{- end }}

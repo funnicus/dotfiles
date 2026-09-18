@@ -67,6 +67,10 @@ check-sh:
 check-rust:
     cd installer && cargo check
 
+# Test secret templates without accessing Bitwarden
+test-templates:
+    python3 scripts/test-bitwarden-templates.py
+
 # Format Rust installer
 fmt:
     cd installer && cargo fmt

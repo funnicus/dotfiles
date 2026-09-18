@@ -27,6 +27,24 @@ just check
 `cargo fmt --check` and `actionlint` separately when touching Rust formatting or
 workflow YAML.
 
+Run the Bitwarden template regression tests separately:
+
+```bash
+just test-templates
+```
+
+These require Python 3 and chezmoi. They run real `chezmoi diff` and `apply`
+commands against temporary directories with a fake `bw` executable. They check
+macOS and Linux behavior for missing, empty, unlocked, and invalid sessions,
+including preservation of existing private files when no session is exported.
+They do not read the real vault or modify the home directory.
+
+To validate the installer package schema, run from the repository root:
+
+```bash
+cargo test --locked --manifest-path installer/Cargo.toml
+```
+
 ## Rebuild Binaries
 
 Build the local platform binary:
@@ -114,6 +132,22 @@ docker run --rm -v "$PWD:/work:ro" dotfiles-arch-test-ci
 docker build -f Dockerfile.arch-bootstrap-test-ci -t dotfiles-arch-bootstrap-test-ci .
 docker run --rm -v "$PWD:/work:ro" dotfiles-arch-bootstrap-test-ci
 ```
+
+### Apple Silicon Docker
+
+The Arch image used by these tests requires x86_64. On Apple Silicon, select
+that platform for both image builds and container runs:
+
+```bash
+DOCKER_DEFAULT_PLATFORM=linux/amd64 just test-arch-ci
+DOCKER_DEFAULT_PLATFORM=linux/amd64 just test-arch-bootstrap-ci
+```
+
+Local runs on Apple Silicon have failed during image setup with
+`error restricting syscalls via seccomp: 22` and
+`switching to sandbox user 'alpm' failed`. This happens before the installer
+runs. If encountered, run the Arch tests on an x86_64 Linux Docker host;
+`just check` and `just test-templates` can still run locally.
 
 ## macOS
 
