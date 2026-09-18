@@ -18,6 +18,10 @@ fish_add_path "$HOME/.cargo/bin"
 fish_add_path "$HOME/go/bin"
 fish_add_path "$HOME/.local/bin"
 
+if test -d "$HOME/.lando/bin"
+  fish_add_path "$HOME/.lando/bin"
+end
+
 if functions -q load_nvm
   load_nvm > /dev/stderr
 end

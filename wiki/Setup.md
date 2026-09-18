@@ -37,7 +37,7 @@ Answer the prompts from `.chezmoi.toml.tmpl`:
 ```text
 git.name          -> git config user.name
 git.email         -> git config user.email
-git.signingkey    -> optional git config user.signingkey
+git.signingKey    -> optional git config user.signingKey
 ssh.bitwardenItem -> Bitwarden item name or ID for private SSH host blocks
 ngrok.bitwardenItem -> Bitwarden item name or ID for the ngrok authtoken
 ```
