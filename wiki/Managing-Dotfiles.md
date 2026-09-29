@@ -1,5 +1,17 @@
 # Managing Dotfiles
 
+## Capture all local changes
+
+```bash
+chezmoi re-add
+
+chezmoi cd
+git status
+git add -A
+git commit -m "Update dotfiles"
+git push
+```
+
 ## Edit source files directly
 
 ```bash
@@ -32,6 +44,8 @@ chezmoi apply
 
 ```bash
 chezmoi edit-config
+chezmoi diff path/to/file
+chezmoi apply path/to/file
 ```
 
 ## Preview apply
