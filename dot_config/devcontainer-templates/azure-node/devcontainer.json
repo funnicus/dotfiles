@@ -1,0 +1,22 @@
+{
+  "name": "azure-node",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "node",
+  "shutdownAction": "stopContainer",
+  "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "latest",
+      "tflint": "latest",
+      "terragrunt": "none"
+    }
+  },
+  "forwardPorts": [
+    7071,
+    10000,
+    10001,
+    10002
+  ]
+}
