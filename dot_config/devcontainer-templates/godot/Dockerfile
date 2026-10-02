@@ -26,5 +26,5 @@ RUN set -eu; \
     mkdir -p "/home/vscode/.local/share/godot/export_templates/${GODOT_VERSION}.stable"; \
     unzip /tmp/templates.tpz -d /tmp/godot-templates; \
     mv /tmp/godot-templates/templates/* "/home/vscode/.local/share/godot/export_templates/${GODOT_VERSION}.stable/"; \
-    chown -R vscode:vscode /home/vscode/.local/share/godot; \
+    chown -R vscode:vscode /home/vscode/.local; \
     rm -rf /tmp/templates.tpz /tmp/godot-templates
