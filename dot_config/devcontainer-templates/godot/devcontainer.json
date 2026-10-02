@@ -1,0 +1,8 @@
+{
+  "name": "godot",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "vscode",
+  "shutdownAction": "stopContainer"
+}
