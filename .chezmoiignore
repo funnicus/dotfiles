@@ -18,6 +18,8 @@ Library/Application Support/ngrok/ngrok.yml
 {{- if ne .chezmoi.os "darwin" }}
 Library/
 set-iterm2-default-profile.sh
+.config/fish/functions/qwen-*
+reload-qwen.fish
 {{- end }}
 
 {{- if eq .chezmoi.os "darwin" }}

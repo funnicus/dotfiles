@@ -97,5 +97,7 @@ if status is-interactive
   atuin init fish | source
 end
 
+{{- if eq .chezmoi.os "darwin" }}
 alias qwen-heavy-off='launchctl kill SIGTERM gui/(id -u)/local.mlx.coder-next'
 alias qwen-light-off='launchctl kill SIGTERM gui/(id -u)/local.mlx.qwen30b'
+{{- end }}
