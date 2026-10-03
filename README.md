@@ -59,3 +59,4 @@ Apple Silicon Docker limitations.
 - [Managing dotfiles](wiki/Managing-Dotfiles.md)
 - [Template verification](wiki/Template-Verification.md)
 - [Local AI](wiki/Local-AI.md)
+- [Development container templates](wiki/Devcontainers.md)

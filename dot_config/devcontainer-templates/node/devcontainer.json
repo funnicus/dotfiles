@@ -1,0 +1,12 @@
+{
+  "name": "node",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "node",
+  "shutdownAction": "stopContainer",
+  "forwardPorts": [
+    3000,
+    5173
+  ]
+}

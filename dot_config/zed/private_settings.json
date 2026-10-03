@@ -1,0 +1,67 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "terminal": {
+    "dock": "right"
+  },
+  "agent_servers": {
+    "codex-acp": {
+      "default_config_options": {
+        "mode": "read-only",
+        "reasoning_effort": "high"
+      },
+      "type": "registry"
+    }
+  },
+  "cli_default_open_behavior": "new_window",
+  "icon_theme": "Catppuccin Mocha",
+  "project_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "right"
+  },
+  "collaboration_panel": {
+    "dock": "right"
+  },
+  "git_panel": {
+    "dock": "right"
+  },
+  "disable_ai": false,
+  "agent": {
+    "dock": "right",
+    "default_model": {
+      "effort": "high",
+      "enable_thinking": true,
+      "provider": "zed.dev",
+      "model": "claude-opus-4-8"
+    },
+    "favorite_models": [],
+    "default_profile": "ask",
+    "model_parameters": []
+  },
+  "ui_font_size": 16,
+  "buffer_font_size": 15,
+  "theme": {
+    "mode": "system",
+    "light": "One Light",
+    "dark": "One Dark"
+  },
+  "languages": {
+    "GDScript": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "/usr/bin/gdformat",
+          "arguments": ["-"]
+        }
+      }
+    }
+  }
+}
