@@ -8,3 +8,7 @@
 
 [data.ngrok]
     bitwardenItem = {{ promptStringOnce . "ngrok.bitwardenItem" "ngrok.bitwardenItem" "" | quote }}
+
+[data.snyk]
+    enabled = {{ promptBoolOnce . "snyk.enabled" "snyk.enabled" false }}
+    bitwardenItem = {{ promptStringOnce . "snyk.bitwardenItem" "snyk.bitwardenItem" "" | quote }}

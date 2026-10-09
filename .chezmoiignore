@@ -13,6 +13,7 @@ justfile
 .ssh/config
 .config/ngrok/ngrok.yml
 Library/Application Support/ngrok/ngrok.yml
+.zshenv
 {{- end }}
 
 {{- if ne .chezmoi.os "darwin" }}
