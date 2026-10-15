@@ -22,6 +22,9 @@ bw sync
 chezmoi diff
 chezmoi apply --dry-run --verbose
 chezmoi apply
+
+# Config git ssh signing
+echo "$(git config user.email) namespaces=\"git\" $(cat ~/.ssh/<MY_KEY>.pub)" >> ~/.config/git/allowed_signers
 ```
 
 Without `BW_SESSION`, chezmoi skips the private SSH and ngrok configs and leaves

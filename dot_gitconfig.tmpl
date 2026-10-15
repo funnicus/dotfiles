@@ -2,10 +2,10 @@
     # Never let Git invent an identity.
     useConfigOnly = true
     name = {{ .git.name }}
-		email = {{ .git.email }}
-		{{- if .git.signingKey }}
-		signingKey = {{ .git.signingKey }}
-		{{- end }}
+	email = {{ .git.email }}
+	{{- if .git.signingKey }}
+	signingKey = {{ .git.signingKey }}
+	{{- end }}
 
 [init]
     defaultBranch = main
@@ -24,6 +24,9 @@
 
 [commit]
 	gpgsign = true
+
+[gpg "ssh"]
+    allowedSignersFile = ~/.config/git/allowed_signers
 
 [submodule]
 	recurse = true
