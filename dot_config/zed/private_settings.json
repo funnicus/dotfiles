@@ -1,0 +1,110 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "format_on_save": "on",
+  "lsp": {
+    "biome": {
+      "settings": {
+        "require_config_file": true,
+      },
+    },
+  },
+  "project_panel": {
+    "dock": "left",
+  },
+  "terminal": {
+    "font_family": "JetBrainsMono Nerd Font",
+    "shell": {
+      "program": "fish",
+    },
+  },
+  "agent": {
+    "dock": "right",
+    "default_profile": "ask",
+    "default_model": {
+      "provider": "llama.cpp",
+      "model": "mlx-community/Qwen3-Coder-Next-4bit",
+      "enable_thinking": false,
+    },
+    "favorite_models": [],
+    "model_parameters": [],
+  },
+  "agent_servers": {
+    "claude-acp": {
+      "type": "registry",
+    },
+    "codex-acp": {
+      "default_config_options": {
+        "collaboration_mode": "plan",
+        "mode": "read-only",
+        "reasoning_effort": "high",
+      },
+      "type": "registry",
+    },
+  },
+  "cli_default_open_behavior": "existing_window",
+  "icon_theme": {
+    "mode": "dark",
+    "light": "Zed (Default)",
+    "dark": "Zed (Default)",
+  },
+  "ui_font_size": 16,
+  "buffer_font_size": 15,
+  "theme": {
+    "mode": "dark",
+    "light": "One Light",
+    "dark": "One Dark",
+  },
+  "language_models": {
+    "openai_compatible": {
+      "mlx": {
+        "api_url": "http://localhost:8080/v1",
+        "available_models": [
+          {
+            "name": "mlx-community/Qwen3-Coder-Next-4bit",
+            "display_name": "Qwen3 Coder Next — Local",
+            "max_tokens": 65536,
+            "max_output_tokens": 32768,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "chat_completions": true,
+              "prompt_cache_key": false,
+              "max_tokens_parameter": true,
+            },
+          },
+          {
+            "name": "mlx-community/Qwen3-Coder-30B-A3B-Instruct-8bit",
+            "display_name": "Qwen3 Coder 30B — Local",
+            "max_tokens": 65536,
+            "max_output_tokens": 32768,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "chat_completions": true,
+              "prompt_cache_key": false,
+              "max_tokens_parameter": true,
+            },
+          },
+        ],
+      },
+    },
+  },
+  "edit_predictions": {
+    "provider": "open_ai_compatible_api",
+    "open_ai_compatible_api": {
+      "api_url": "http://127.0.0.1:8081/v1/completions",
+      "model": "mlx-community/Qwen2.5-Coder-7B-4bit",
+      "prompt_format": "qwen",
+      "max_output_tokens": 512,
+    },
+  },
+}
