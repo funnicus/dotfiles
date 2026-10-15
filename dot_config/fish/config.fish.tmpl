@@ -2,16 +2,6 @@
 if test -f /usr/share/cachyos-fish-config/cachyos-config.fish
   source /usr/share/cachyos-fish-config/cachyos-config.fish
 end
-
-if test -f home/linuxbrew/.linuxbrew/bin/brew
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)"
-end
-{{- end }}
-
-{{- if eq .chezmoi.os "darwin" }}
-if test -x /opt/homebrew/bin/brew
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-end
 {{- end }}
 
 fish_add_path "$HOME/.cargo/bin"
