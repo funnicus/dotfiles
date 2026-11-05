@@ -28,7 +28,7 @@
     "dock": "right"
   },
   "terminal": {
-    "dock": "right",
+    "dock": "bottom",
     "font_family": "JetBrainsMono Nerd Font",
     "shell": {
       "program": "fish"
