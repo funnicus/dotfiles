@@ -23,8 +23,9 @@ chezmoi diff
 chezmoi apply --dry-run --verbose
 chezmoi apply
 
-# Config git ssh signing
-echo "$(git config user.email) namespaces=\"git\" $(cat ~/.ssh/<MY_KEY>.pub)" >> ~/.config/git/allowed_signers
+# Arch/CachyOS
+systemctl --user enable --now ssh-agent.socket
+ssh-add
 ```
 
 Without `BW_SESSION`, chezmoi skips the private SSH and ngrok configs and leaves
@@ -62,4 +63,3 @@ Apple Silicon Docker limitations.
 - [Managing dotfiles](wiki/Managing-Dotfiles.md)
 - [Template verification](wiki/Template-Verification.md)
 - [Local AI](wiki/Local-AI.md)
-- [Development container templates](wiki/Devcontainers.md)
